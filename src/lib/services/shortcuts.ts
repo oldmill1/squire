@@ -1,5 +1,6 @@
 import { keyboardService } from './keyboardService';
 import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/fontSizeStore';
+import { setMode } from '$lib/stores/modeStore';
 
 export function initializeShortcuts() {
   // Font size shortcuts
@@ -42,5 +43,24 @@ export function initializeShortcuts() {
       // Add your custom refresh logic here
     },
     description: 'Custom refresh'
+  });
+
+  // Mode switching shortcuts
+  keyboardService.addShortcut({
+    key: 'i',
+    action: () => {
+      setMode('interactive');
+      console.log('Switched to interactive mode');
+    },
+    description: 'Switch to interactive mode'
+  });
+
+  keyboardService.addShortcut({
+    key: 'Escape',
+    action: () => {
+      setMode('script');
+      console.log('Switched to script mode');
+    },
+    description: 'Switch to script mode'
   });
 }

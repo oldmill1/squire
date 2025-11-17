@@ -1,17 +1,23 @@
 <script lang="ts">
   import styles from './Statusbar.module.scss';
+  import { modeStore, type Mode } from '$lib/stores/modeStore';
   
   interface Props {
-    leftText?: string;
     centerText?: string;
     rightText?: string;
   }
   
-  let { leftText = 'Left Status', centerText = 'Center Status', rightText = 'Right Status' }: Props = $props();
+  let { centerText = 'Center Status', rightText = 'Right Status' }: Props = $props();
+  
+  const currentMode = $derived($modeStore);
+  
+  function getModeDisplay(mode: Mode): string {
+    return mode.charAt(0).toUpperCase() + mode.slice(1) + ' Mode';
+  }
 </script>
 
 <div class={styles.statusbar}>
-  <div class={styles.left}>{leftText}</div>
+  <div class={styles.left}>{getModeDisplay(currentMode)}</div>
   <div class={styles.center}>{centerText}</div>
   <div class={styles.right}>{rightText}</div>
 </div>

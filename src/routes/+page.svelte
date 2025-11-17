@@ -12,12 +12,4 @@
 
 <Userinput />
 <Statusbar />
-<Display content="Hello from Display component!
-
-Try these keyboard shortcuts:
-+ or = : Increase font size
-- or _ : Decrease font size
-0 : Reset font size
-Ctrl+R : Custom refresh action
-
-The keyboard service is now active!" />
+<Display />
