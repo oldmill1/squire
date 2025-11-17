@@ -1,0 +1,117 @@
+import { writable } from 'svelte/store';
+
+export type ShortcutAction = () => void | Promise<void>;
+
+export interface Shortcut {
+  key: string;
+  action: ShortcutAction;
+  description?: string;
+  ctrlKey?: boolean;
+  altKey?: boolean;
+  shiftKey?: boolean;
+  metaKey?: boolean;
+}
+
+interface KeyboardServiceState {
+  shortcuts: Map<string, Shortcut>;
+  isEnabled: boolean;
+}
+
+class KeyboardService {
+  private store = writable<KeyboardServiceState>({
+    shortcuts: new Map(),
+    isEnabled: true
+  });
+
+  private keydownHandler = (event: KeyboardEvent) => {
+    const { shortcuts, isEnabled } = this.getStoreValue();
+    
+    if (!isEnabled) return;
+
+    const key = this.createKey(event);
+    const shortcut = shortcuts.get(key);
+    
+    if (shortcut) {
+      event.preventDefault();
+      event.stopPropagation();
+      shortcut.action();
+    }
+  };
+
+  private createKey(event: KeyboardEvent): string {
+    const parts = [];
+    if (event.ctrlKey) parts.push('ctrl');
+    if (event.altKey) parts.push('alt');
+    if (event.shiftKey) parts.push('shift');
+    if (event.metaKey) parts.push('meta');
+    parts.push(event.key.toLowerCase());
+    return parts.join('+');
+  }
+
+  private getStoreValue(): KeyboardServiceState {
+    let value: KeyboardServiceState | undefined;
+    this.store.subscribe(v => value = v)();
+    return value!;
+  }
+
+  constructor() {
+    if (typeof window !== 'undefined') {
+      window.addEventListener('keydown', this.keydownHandler);
+    }
+  }
+
+  subscribe = this.store.subscribe;
+
+  addShortcut(shortcut: Shortcut): void {
+    const { shortcuts } = this.getStoreValue();
+    const key = this.createShortcutKey(shortcut);
+    shortcuts.set(key, shortcut);
+    this.store.update(state => ({ ...state, shortcuts: new Map(shortcuts) }));
+  }
+
+  removeShortcut(key: string, ctrlKey = false, altKey = false, shiftKey = false, metaKey = false): void {
+    const { shortcuts } = this.getStoreValue();
+    const parts = [];
+    if (ctrlKey) parts.push('ctrl');
+    if (altKey) parts.push('alt');
+    if (shiftKey) parts.push('shift');
+    if (metaKey) parts.push('meta');
+    parts.push(key.toLowerCase());
+    const fullKey = parts.join('+');
+    
+    shortcuts.delete(fullKey);
+    this.store.update(state => ({ ...state, shortcuts: new Map(shortcuts) }));
+  }
+
+  enable(): void {
+    this.store.update(state => ({ ...state, isEnabled: true }));
+  }
+
+  disable(): void {
+    this.store.update(state => ({ ...state, isEnabled: false }));
+  }
+
+  getShortcuts(): Shortcut[] {
+    const { shortcuts } = this.getStoreValue();
+    return Array.from(shortcuts.values());
+  }
+
+  private createShortcutKey(shortcut: Shortcut): string {
+    const parts = [];
+    if (shortcut.ctrlKey) parts.push('ctrl');
+    if (shortcut.altKey) parts.push('alt');
+    if (shortcut.shiftKey) parts.push('shift');
+    if (shortcut.metaKey) parts.push('meta');
+    parts.push(shortcut.key.toLowerCase());
+    return parts.join('+');
+  }
+
+  destroy(): void {
+    if (typeof window !== 'undefined') {
+      window.removeEventListener('keydown', this.keydownHandler);
+    }
+  }
+}
+
+export const keyboardService = new KeyboardService();
+
