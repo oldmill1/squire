@@ -12,9 +12,14 @@ export interface Shortcut {
   metaKey?: boolean;
 }
 
+export interface CharacterInputHandler {
+  (char: string): void;
+}
+
 interface KeyboardServiceState {
   shortcuts: Map<string, Shortcut>;
   isEnabled: boolean;
+  characterInputHandler?: CharacterInputHandler;
 }
 
 class KeyboardService {
@@ -24,7 +29,7 @@ class KeyboardService {
   });
 
   private keydownHandler = (event: KeyboardEvent) => {
-    const { shortcuts, isEnabled } = this.getStoreValue();
+    const { shortcuts, isEnabled, characterInputHandler } = this.getStoreValue();
     
     if (!isEnabled) return;
 
@@ -35,6 +40,10 @@ class KeyboardService {
       event.preventDefault();
       event.stopPropagation();
       shortcut.action();
+    } else if (characterInputHandler && this.isPrintableCharacter(event)) {
+      event.preventDefault();
+      event.stopPropagation();
+      characterInputHandler(event.key);
     }
   };
 
@@ -46,6 +55,11 @@ class KeyboardService {
     if (event.metaKey) parts.push('meta');
     parts.push(event.key.toLowerCase());
     return parts.join('+');
+  }
+
+  private isPrintableCharacter(event: KeyboardEvent): boolean {
+    // Check if the key is a printable character (not a control key)
+    return event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey;
   }
 
   private getStoreValue(): KeyboardServiceState {
@@ -94,6 +108,14 @@ class KeyboardService {
   getShortcuts(): Shortcut[] {
     const { shortcuts } = this.getStoreValue();
     return Array.from(shortcuts.values());
+  }
+
+  setCharacterInputHandler(handler?: CharacterInputHandler): void {
+    this.store.update(state => ({ ...state, characterInputHandler: handler }));
+  }
+
+  clearCharacterInputHandler(): void {
+    this.store.update(state => ({ ...state, characterInputHandler: undefined }));
   }
 
   private createShortcutKey(shortcut: Shortcut): string {

@@ -11,5 +11,5 @@
 </script>
 
 <Userinput />
-<Statusbar />
+<Statusbar centerText="" rightText="" />
 <Display />
