@@ -26,6 +26,7 @@
   gap: 0;
   flex: 1;
   counter-reset: line;
+  transition: transform 0.3s ease-out;
 }
 
 .line {

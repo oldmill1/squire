@@ -14,6 +14,9 @@
   const selectedLines = $derived($selectedLinesStore);
   let showSquire = $state(false);
   let fading = $state(false);
+  let linesContainerRef: HTMLElement;
+  let typewriterOffset = $state(0);
+  let previousLineCount = $state(0);
 
   onMount(() => {
     // Show Squire after a brief delay to allow font loading
@@ -23,6 +26,48 @@
       }
     }, 500);
   });
+
+  function handleTypewriterEffect() {
+    console.log('handleTypewriterEffect called', {
+      currentMode,
+      linesContainerRef: !!linesContainerRef,
+      currentLinesLength: currentLines.length
+    });
+    
+    if (currentMode === 'interactive' && linesContainerRef && currentLines.length >= 2) {
+      // Use requestAnimationFrame to ensure DOM is fully rendered
+      requestAnimationFrame(() => {
+        // Use the correct CSS module class selector
+        const lineElements = linesContainerRef.querySelectorAll('span');
+        console.log('lineElements found:', lineElements.length);
+        console.log('linesContainer children:', linesContainerRef.children.length);
+        
+        const secondToLastLine = lineElements[lineElements.length - 2];
+        console.log('secondToLastLine:', !!secondToLastLine);
+        
+        if (secondToLastLine) {
+          const height = secondToLastLine.getBoundingClientRect().height;
+          console.log('height measured:', height);
+          
+          if (height > 0) {
+            typewriterOffset += height;
+            console.log('new typewriterOffset:', typewriterOffset);
+          } else {
+            console.log('height is 0, retrying...');
+            // Retry with a longer delay if height is 0
+            setTimeout(() => {
+              const retryHeight = secondToLastLine.getBoundingClientRect().height;
+              console.log('retry height measured:', retryHeight);
+              if (retryHeight > 0) {
+                typewriterOffset += retryHeight;
+                console.log('retry new typewriterOffset:', typewriterOffset);
+              }
+            }, 100);
+          }
+        }
+      });
+    }
+  }
 
   $effect(() => {
     if (currentMode === 'interactive' && showSquire) {
@@ -45,6 +90,29 @@
   });
 
   $effect(() => {
+    // Trigger typewriter effect when a new line is added in interactive mode
+    // console.log('Line count effect:', {
+    //   currentMode,
+    //   currentLinesLength: currentLines.length,
+    //   previousLineCount,
+    //   shouldTrigger: currentMode === 'interactive' && currentLines.length > previousLineCount && previousLineCount > 0
+    // });
+    
+    if (currentMode === 'interactive' && currentLines.length > previousLineCount && previousLineCount > 0) {
+      // Use longer setTimeout to ensure DOM has updated with the new line
+      setTimeout(handleTypewriterEffect, 50);
+    }
+    previousLineCount = currentLines.length;
+  });
+
+  $effect(() => {
+    // Reset typewriter offset when switching modes or clearing text
+    if (currentMode !== 'interactive' || currentLines.length === 0) {
+      typewriterOffset = 0;
+    }
+  });
+
+  $effect(() => {
     // Debug: Log when selectedLines changes
     console.log('Display: selectedLines changed:', selectedLines);
   });
@@ -55,7 +123,7 @@
     <div class={`${styles.emptyState} ${fading ? styles.fading : ''}`}>Squire</div>
   {:else}
     <div class={styles.contentWrapper}>
-      <div class={styles.linesContainer}>
+      <div class={styles.linesContainer} bind:this={linesContainerRef} style="transform: translateY(-{typewriterOffset}px);">
         {#each currentLines as line, index}
           {@const lineNum = index + 1}
           {@const isSelected = selectedLines.includes(lineNum)}
