@@ -15,14 +15,12 @@
     #7dd3fc 100%    /* Light pastel blue-green */
   );
   box-shadow: none;
+  position: relative;
+  left: 0;
 }
 
 .cursor.hidden {
   opacity: 0;
-}
-
-.cursor.emptyLine {
-  margin-left: 1px; /* Normal margin when line is empty */
 }
 
 .cursorInner {

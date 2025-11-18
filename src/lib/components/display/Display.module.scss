@@ -41,7 +41,7 @@
 .line {
   display: block;
   width: 100%;
-  white-space: pre-line;
+  white-space: pre-wrap;
   word-wrap: break-word;
   min-height: 1.7em;
   padding: 0.1em 0.2em 0.1em 2.5rem;
@@ -64,6 +64,10 @@
   user-select: none;
   padding-right: 0.5rem;
   transition: opacity 0.2s ease;
+}
+
+.lineContent {
+  display: inline;
 }
 
 .line:empty::before {

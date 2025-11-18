@@ -144,10 +144,12 @@
             data-line={lineNum}
             data-selected={isSelected}
           >
-            {cleanLine}
-            {#if isCurrent}
-              <Cursor isEmptyLine={cleanLine.length === 0} />
-            {/if}
+            <span class={styles.lineContent}>
+              {cleanLine}
+              {#if isCurrent}
+                <Cursor isEmptyLine={cleanLine.length === 0} />
+              {/if}
+            </span>
           </span>
         {/each}
       </div>
