@@ -16,8 +16,6 @@
 </script>
 
 <div 
-  class={`${styles.cursor} ${isEmptyLine ? styles.emptyLine : ''}`}
-  style="opacity: {isVisible ? '1' : '0'};"
+  class={`${styles.cursor} ${isEmptyLine ? styles.emptyLine : ''} ${isVisible ? '' : styles.hidden}`}
 >
-  <div class={styles.cursorInner}></div>
 </div>

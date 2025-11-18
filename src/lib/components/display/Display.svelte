@@ -138,7 +138,7 @@
           {@const lineNum = index + 1}
           {@const isSelected = selectedLines.includes(lineNum)}
           {@const isCurrent = index === currentLine}
-          {@const cleanLine = line.replace(/\s+$/, '')}
+          {@const cleanLine = line}
           <span 
             class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''}`} 
             data-line={lineNum}

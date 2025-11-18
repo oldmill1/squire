@@ -1,12 +1,11 @@
 .cursor {
   display: inline-block;
-  width: 3px;
-  height: 1.4em;
-  vertical-align: text-bottom;
+  width: 9px;
+  height: 20px;
+  vertical-align: -4px; /* Adjust to align with text baseline */
   margin-left: -8px; /* Negative margin to overlap text when there is text */
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease !important; /* Forced to override conflicting CSS */
   pointer-events: none;
-  position: relative;
   border-radius: 2px;
   background: linear-gradient(135deg, 
     #7dd3fc 0%,     /* Light pastel blue-green */
@@ -15,10 +14,11 @@
     #6ee7b7 75%,    /* Pastel green */
     #7dd3fc 100%    /* Light pastel blue-green */
   );
-  box-shadow: 
-    0 0 8px rgba(110, 231, 183, 0.6),   /* Soft green glow */
-    0 0 12px rgba(110, 231, 183, 0.3),  /* Outer glow */
-    inset 0 0 2px rgba(255, 255, 255, 0.6); /* Inner highlight */
+  box-shadow: none;
+}
+
+.cursor.hidden {
+  opacity: 0;
 }
 
 .cursor.emptyLine {
