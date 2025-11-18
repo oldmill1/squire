@@ -12,14 +12,20 @@
   line-height: 1.6;
   overflow-y: auto;
   padding: 1rem;
-  white-space: pre-wrap;
-  word-wrap: break-word;
 }
 
-.textContent {
-  position: relative;
+.linesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+}
+
+.line {
+  display: inline-block;
+  width: 100%;
   white-space: pre-wrap;
   word-wrap: break-word;
+  min-height: 1.2em;
 }
 
 .emptyState {

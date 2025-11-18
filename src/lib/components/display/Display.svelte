@@ -3,7 +3,6 @@
   import { fontSizeStore } from '$lib/stores/fontSizeStore';
   import { textStore } from '$lib/stores/textStore';
   import { modeStore } from '$lib/stores/modeStore';
-  import Cursor from '../cursor/Cursor.svelte';
   import { onMount } from 'svelte';
   
   const fontSize = $derived($fontSizeStore);
@@ -11,7 +10,9 @@
   const currentMode = $derived($modeStore);
   let showSquire = $state(false);
   let fading = $state(false);
-  let textElement = $state<HTMLElement | undefined>();
+
+  // Split text into lines for rendering
+  const lines = $derived(currentText === '' ? [] : currentText.split('\n'));
 
   onMount(() => {
     // Show Squire after a brief delay to allow font loading
@@ -42,11 +43,10 @@
   {#if showSquire}
     <div class={`${styles.emptyState} ${fading ? styles.fading : ''}`}>Squire</div>
   {:else}
-    <div bind:this={textElement} class={styles.textContent}>
-      {currentText}
-      {#if currentMode === 'interactive'}
-        <Cursor {textElement} />
-      {/if}
+    <div class={styles.linesContainer}>
+      {#each lines as line, index}
+        <span class={styles.line} data-line={index + 1}>{line}</span>
+      {/each}
     </div>
   {/if}
 </div>
