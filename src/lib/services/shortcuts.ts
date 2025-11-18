@@ -3,7 +3,7 @@ import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/f
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
 import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
 import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
-import { setSelectedLines, addSelectedLine, getSelectedLines } from '$lib/stores/selectedLinesStore';
+import { setSelectedLines, addSelectedLine, getSelectedLines, clearSelectedLines } from '$lib/stores/selectedLinesStore';
 import { deleteLine, deleteAllLines, deleteLinesRange } from '$lib/stores/textStore';
 
 // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
@@ -58,6 +58,7 @@ export function initializeShortcuts() {
         const currentMode = getMode();
         if (currentMode !== 'interactive') {
           setMode('interactive');
+          clearSelectedLines();
           console.log('Switched to interactive mode. Current text:', getLines());
           keyboardService.setCharacterInputHandler((char: string) => {
             appendText(char);
@@ -118,6 +119,9 @@ export function initializeShortcuts() {
               const commandChars = command.split('');
               
               // Process command for line selection
+              // Clear selection before processing any selection command
+              clearSelectedLines();
+              
               // Check for wildcard % to select all lines
               if (commandChars.length === 1 && commandChars[0] === '%') {
                 // Select all lines - get current line count from textStore
@@ -173,8 +177,8 @@ export function initializeShortcuts() {
                     const currentLines = getLines();
                     const validRange = range.filter(line => line <= currentLines.length);
                     
-                    // Add each line in range to selection
-                    validRange.forEach(line => addSelectedLine(line));
+                    // Set the selection to the range (replace any existing selection)
+                    setSelectedLines(validRange);
                     console.log(`Selected lines ${startLine} through ${endLine}:`, validRange);
                     console.log('Store now contains:', getSelectedLines());
                   } else {
@@ -193,7 +197,7 @@ export function initializeShortcuts() {
                     const lineNumber = parseInt(numberStr);
                     
                     if (!isNaN(lineNumber) && lineNumber > 0) {
-                      addSelectedLine(lineNumber);
+                      setSelectedLines([lineNumber]);
                       // Convert number to ordinal (1st, 2nd, 3rd, etc.)
                       const ordinal = getOrdinal(lineNumber);
                       console.log(`Selected the ${ordinal} line`);
