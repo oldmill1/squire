@@ -41,15 +41,20 @@ class KeyboardService {
     const key = this.createKey(event);
     const shortcut = shortcuts.get(key);
     
+    console.log('Key pressed:', event.key, 'Created key:', key, 'Has shortcut:', !!shortcut, 'Has char handler:', !!characterInputHandler);
+    
     if (shortcut) {
+      console.log('Executing shortcut for key:', key);
       event.preventDefault();
       event.stopPropagation();
       shortcut.action();
     } else if (specialKeyHandler && this.isSpecialKey(event)) {
+      console.log('Handling special key:', event.key);
       event.preventDefault();
       event.stopPropagation();
       specialKeyHandler(event.key);
     } else if (characterInputHandler && this.isPrintableCharacter(event)) {
+      console.log('Handling character input:', event.key);
       event.preventDefault();
       event.stopPropagation();
       characterInputHandler(event.key);
