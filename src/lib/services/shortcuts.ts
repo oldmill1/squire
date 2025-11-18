@@ -1,7 +1,7 @@
 import { keyboardService } from './keyboardService';
 import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/fontSizeStore';
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
-import { appendText, insertNewline, deleteCharacter, deleteForward } from '$lib/stores/textStore';
+import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
 
 export function initializeShortcuts() {
   // Font size shortcuts
@@ -52,12 +52,10 @@ export function initializeShortcuts() {
       key: 'i',
       action: () => {
         const currentMode = getMode();
-        console.log('i key pressed, current mode:', currentMode);
         if (currentMode !== 'interactive') {
-          console.log('Switching to interactive mode');
           setMode('interactive');
+          console.log('Switched to interactive mode. Current text:', getLines());
           keyboardService.setCharacterInputHandler((char: string) => {
-            console.log('Character input handler called with:', char);
             appendText(char);
           });
           keyboardService.setSpecialKeyHandler((key: string) => {
@@ -71,7 +69,6 @@ export function initializeShortcuts() {
           });
           // Remove the "i" shortcut while in interactive mode
           keyboardService.removeShortcut('i');
-          console.log('Switched to interactive mode, removed i shortcut');
         }
       },
       description: 'Switch to interactive mode'
@@ -84,12 +81,12 @@ export function initializeShortcuts() {
   keyboardService.addShortcut({
     key: 'Escape',
     action: () => {
+      console.log('Switched to script mode. Final text:', getLines());
       setMode('script');
       keyboardService.clearCharacterInputHandler();
       keyboardService.clearSpecialKeyHandler();
       // Re-add the "i" shortcut when returning to script mode
       addInteractiveShortcut();
-      console.log('Switched to script mode, re-added i shortcut');
     },
     description: 'Switch to script mode'
   });
