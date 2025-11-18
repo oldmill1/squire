@@ -37,6 +37,15 @@
     if (currentMode === 'interactive' && linesContainerRef && currentLines.length >= 2) {
       // Use requestAnimationFrame to ensure DOM is fully rendered
       requestAnimationFrame(() => {
+        // Check if container is at least 200px tall before starting effect
+        const containerHeight = linesContainerRef.getBoundingClientRect().height;
+        console.log('container height:', containerHeight);
+        
+        if (containerHeight < 200) {
+          console.log('Container too small, waiting...');
+          return;
+        }
+        
         // Use the correct CSS module class selector
         const lineElements = linesContainerRef.querySelectorAll('span');
         console.log('lineElements found:', lineElements.length);
