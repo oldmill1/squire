@@ -16,10 +16,15 @@ export interface CharacterInputHandler {
   (char: string): void;
 }
 
+export interface SpecialKeyHandler {
+  (key: string): void;
+}
+
 interface KeyboardServiceState {
   shortcuts: Map<string, Shortcut>;
   isEnabled: boolean;
   characterInputHandler?: CharacterInputHandler;
+  specialKeyHandler?: SpecialKeyHandler;
 }
 
 class KeyboardService {
@@ -29,7 +34,7 @@ class KeyboardService {
   });
 
   private keydownHandler = (event: KeyboardEvent) => {
-    const { shortcuts, isEnabled, characterInputHandler } = this.getStoreValue();
+    const { shortcuts, isEnabled, characterInputHandler, specialKeyHandler } = this.getStoreValue();
     
     if (!isEnabled) return;
 
@@ -40,6 +45,10 @@ class KeyboardService {
       event.preventDefault();
       event.stopPropagation();
       shortcut.action();
+    } else if (specialKeyHandler && this.isSpecialKey(event)) {
+      event.preventDefault();
+      event.stopPropagation();
+      specialKeyHandler(event.key);
     } else if (characterInputHandler && this.isPrintableCharacter(event)) {
       event.preventDefault();
       event.stopPropagation();
@@ -60,6 +69,12 @@ class KeyboardService {
   private isPrintableCharacter(event: KeyboardEvent): boolean {
     // Check if the key is a printable character (not a control key)
     return event.key.length === 1 && !event.ctrlKey && !event.altKey && !event.metaKey;
+  }
+
+  private isSpecialKey(event: KeyboardEvent): boolean {
+    // Check if the key is a special editing key (Enter, Delete, Backspace)
+    const specialKeys = ['Enter', 'Delete', 'Backspace'];
+    return specialKeys.includes(event.key) && !event.ctrlKey && !event.altKey && !event.metaKey;
   }
 
   private getStoreValue(): KeyboardServiceState {
@@ -114,8 +129,16 @@ class KeyboardService {
     this.store.update(state => ({ ...state, characterInputHandler: handler }));
   }
 
+  setSpecialKeyHandler(handler?: SpecialKeyHandler): void {
+    this.store.update(state => ({ ...state, specialKeyHandler: handler }));
+  }
+
   clearCharacterInputHandler(): void {
     this.store.update(state => ({ ...state, characterInputHandler: undefined }));
+  }
+
+  clearSpecialKeyHandler(): void {
+    this.store.update(state => ({ ...state, specialKeyHandler: undefined }));
   }
 
   private createShortcutKey(shortcut: Shortcut): string {

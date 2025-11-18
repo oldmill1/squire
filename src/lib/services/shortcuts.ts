@@ -1,7 +1,7 @@
 import { keyboardService } from './keyboardService';
 import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/fontSizeStore';
 import { setMode, modeStore } from '$lib/stores/modeStore';
-import { appendText } from '$lib/stores/textStore';
+import { appendText, insertNewline, deleteCharacter, deleteForward } from '$lib/stores/textStore';
 
 export function initializeShortcuts() {
   // Font size shortcuts
@@ -54,6 +54,15 @@ export function initializeShortcuts() {
       keyboardService.setCharacterInputHandler((char: string) => {
         appendText(char);
       });
+      keyboardService.setSpecialKeyHandler((key: string) => {
+        if (key === 'Enter') {
+          insertNewline();
+        } else if (key === 'Backspace') {
+          deleteCharacter();
+        } else if (key === 'Delete') {
+          deleteForward();
+        }
+      });
       console.log('Switched to interactive mode');
     },
     description: 'Switch to interactive mode'
@@ -64,6 +73,7 @@ export function initializeShortcuts() {
     action: () => {
       setMode('script');
       keyboardService.clearCharacterInputHandler();
+      keyboardService.clearSpecialKeyHandler();
       console.log('Switched to script mode');
     },
     description: 'Switch to script mode'
