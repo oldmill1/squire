@@ -14,25 +14,6 @@
   padding: 1rem;
 }
 
-.lineNumbers {
-  display: flex;
-  flex-direction: column;
-  color: #64748b;
-  min-width: 2rem;
-  text-align: right;
-  user-select: none;
-  padding-right: 0.5rem;
-  border-right: 1px solid #334155;
-}
-
-.lineNumber {
-  min-height: 1.7em;
-  display: flex;
-  align-items: center;
-  justify-content: flex-end;
-  padding: 0.1em 0;
-}
-
 .contentWrapper {
   display: flex;
   gap: 1rem;
@@ -44,6 +25,7 @@
   flex-direction: column;
   gap: 0;
   flex: 1;
+  counter-reset: line;
 }
 
 .line {
@@ -52,9 +34,23 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   min-height: 1.7em;
-  padding: 0.1em 0.2em;
+  padding: 0.1em 0.2em 0.1em 2.5rem;
   border-radius: 0.2em;
   transition: background-color 0.2s ease;
+  position: relative;
+}
+
+.line::before {
+  counter-increment: line;
+  content: counter(line);
+  position: absolute;
+  left: 0;
+  top: 0.1em;
+  color: #9ea8b6;
+  width: 2rem;
+  text-align: right;
+  user-select: none;
+  padding-right: 0.5rem;
 }
 
 .currentLine {

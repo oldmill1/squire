@@ -48,11 +48,6 @@
     <div class={`${styles.emptyState} ${fading ? styles.fading : ''}`}>Squire</div>
   {:else}
     <div class={styles.contentWrapper}>
-      <div class={styles.lineNumbers}>
-        {#each currentLines as line, index}
-          <span class={styles.lineNumber}>{index + 1}</span>
-        {/each}
-      </div>
       <div class={styles.linesContainer}>
         {#each currentLines as line, index}
           <span class={`${styles.line} ${index === currentLine ? styles.currentLine : ''}`} data-line={index + 1}>{line}</span>
