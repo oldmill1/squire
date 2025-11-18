@@ -13,8 +13,8 @@
     textStore.update(lines => {
       if (lines.length === 0) {
         return [
-          'Welcome to Squire - Your AI Coding Assistant',
-          'Start typing to begin, or use shortcuts to switch modes',
+          'Welcome to Squire - Web-Based Novel Writer',
+          'Vim-like text editor with character intelligence',
           'Press Ctrl+Space to toggle between Script and Interactive modes'
         ];
       }
