@@ -146,7 +146,7 @@
           >
             {cleanLine}
             {#if isCurrent}
-              <Cursor />
+              <Cursor isEmptyLine={cleanLine.length === 0} />
             {/if}
           </span>
         {/each}

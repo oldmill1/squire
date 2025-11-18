@@ -3,7 +3,7 @@
   width: 3px;
   height: 1.4em;
   vertical-align: text-bottom;
-  margin-left: -8px; /* Aggressive negative margin to overlap text */
+  margin-left: -8px; /* Negative margin to overlap text when there is text */
   transition: opacity 0.15s ease;
   pointer-events: none;
   position: relative;
@@ -19,6 +19,10 @@
     0 0 8px rgba(110, 231, 183, 0.6),   /* Soft green glow */
     0 0 12px rgba(110, 231, 183, 0.3),  /* Outer glow */
     inset 0 0 2px rgba(255, 255, 255, 0.6); /* Inner highlight */
+}
+
+.cursor.emptyLine {
+  margin-left: 1px; /* Normal margin when line is empty */
 }
 
 .cursorInner {
