@@ -4,6 +4,7 @@ import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
 import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
 import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
 import { setSelectedLines, addSelectedLine, getSelectedLines } from '$lib/stores/selectedLinesStore';
+import { deleteLine, deleteAllLines, deleteLinesRange } from '$lib/stores/textStore';
 
 // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
 function getOrdinal(n: number): string {
@@ -125,26 +126,81 @@ export function initializeShortcuts() {
                 setSelectedLines(allLineNumbers);
                 console.log(`Selected all ${currentLines.length} lines:`, allLineNumbers);
                 console.log('Store now contains:', getSelectedLines());
-              } else {
-                // Look for numbers in the command
-                let numberStr = '';
-                for (const char of commandChars) {
-                  if (/\d/.test(char)) {
-                    numberStr += char;
+              } else if (commandChars.length >= 2 && commandChars[commandChars.length - 1] === 'd') {
+                // Check for delete commands (e.g., "3d", "20d", "%d", "1,3d", "2,4d")
+                const deleteChar = commandChars[commandChars.length - 1];
+                const commandPart = commandChars.slice(0, -1).join('');
+                
+                if (commandPart === '%') {
+                  // Delete all lines
+                  deleteAllLines();
+                  console.log('Deleted all lines');
+                } else if (commandPart.includes(',')) {
+                  // Handle range delete (e.g., "1,3d", "2,4d")
+                  const [startStr, endStr] = commandPart.split(',');
+                  const startLine = parseInt(startStr);
+                  const endLine = parseInt(endStr);
+                  
+                  if (!isNaN(startLine) && !isNaN(endLine) && startLine > 0 && endLine > 0) {
+                    deleteLinesRange(startLine, endLine);
+                    console.log(`Deleted lines ${startLine} through ${endLine}`);
+                  } else {
+                    console.log('Invalid range for delete command');
+                  }
+                } else {
+                  // Delete specific line
+                  const lineNumber = parseInt(commandPart);
+                  if (!isNaN(lineNumber) && lineNumber > 0) {
+                    deleteLine(lineNumber);
+                    const ordinal = getOrdinal(lineNumber);
+                    console.log(`Deleted the ${ordinal} line`);
+                  } else {
+                    console.log('Invalid line number for delete command');
                   }
                 }
+              } else {
+                // Handle selection commands (including ranges)
+                const commandStr = commandChars.join('');
                 
-                if (numberStr.length > 0) {
-                  const lineNumber = parseInt(numberStr);
+                if (commandStr.includes(',')) {
+                  // Handle range selection (e.g., "1,3", "2,4")
+                  const [startStr, endStr] = commandStr.split(',');
+                  const startLine = parseInt(startStr);
+                  const endLine = parseInt(endStr);
                   
-                  if (!isNaN(lineNumber) && lineNumber > 0) {
-                    addSelectedLine(lineNumber);
-                    // Convert number to ordinal (1st, 2nd, 3rd, etc.)
-                    const ordinal = getOrdinal(lineNumber);
-                    console.log(`Selected the ${ordinal} line`);
+                  if (!isNaN(startLine) && !isNaN(endLine) && startLine > 0 && endLine > 0) {
+                    const range = Array.from({ length: endLine - startLine + 1 }, (_, i) => startLine + i);
+                    const currentLines = getLines();
+                    const validRange = range.filter(line => line <= currentLines.length);
+                    
+                    // Add each line in range to selection
+                    validRange.forEach(line => addSelectedLine(line));
+                    console.log(`Selected lines ${startLine} through ${endLine}:`, validRange);
                     console.log('Store now contains:', getSelectedLines());
                   } else {
-                    console.log('Invalid line number');
+                    console.log('Invalid range for selection');
+                  }
+                } else {
+                  // Look for numbers in the command (single line selection)
+                  let numberStr = '';
+                  for (const char of commandChars) {
+                    if (/\d/.test(char)) {
+                      numberStr += char;
+                    }
+                  }
+                  
+                  if (numberStr.length > 0) {
+                    const lineNumber = parseInt(numberStr);
+                    
+                    if (!isNaN(lineNumber) && lineNumber > 0) {
+                      addSelectedLine(lineNumber);
+                      // Convert number to ordinal (1st, 2nd, 3rd, etc.)
+                      const ordinal = getOrdinal(lineNumber);
+                      console.log(`Selected the ${ordinal} line`);
+                      console.log('Store now contains:', getSelectedLines());
+                    } else {
+                      console.log('Invalid line number');
+                    }
                   }
                 }
               }

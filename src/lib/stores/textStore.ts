@@ -90,6 +90,38 @@ export function deleteForward() {
   deleteCharacter();
 }
 
+export function deleteLine(lineNumber: number) {
+  textStore.update(lines => {
+    if (lines.length === 0 || lineNumber < 1 || lineNumber > lines.length) {
+      return lines; // Return unchanged if invalid line number
+    }
+    // Remove the specified line (lineNumber is 1-based, array is 0-based)
+    return lines.filter((_, index) => index !== lineNumber - 1);
+  });
+  saveToLocalStorage();
+}
+
+export function deleteAllLines() {
+  textStore.set([]);
+  saveToLocalStorage();
+}
+
+export function deleteLinesRange(startLine: number, endLine: number) {
+  textStore.update(lines => {
+    if (lines.length === 0 || startLine < 1 || endLine < 1 || startLine > lines.length) {
+      return lines; // Return unchanged if invalid range
+    }
+    // Adjust endLine if it's beyond the array length
+    const adjustedEndLine = Math.min(endLine, lines.length);
+    // Remove lines from startLine to endLine (inclusive, 1-based to 0-based)
+    return lines.filter((_, index) => {
+      const lineNumber = index + 1;
+      return lineNumber < startLine || lineNumber > adjustedEndLine;
+    });
+  });
+  saveToLocalStorage();
+}
+
 export function getText(): string {
   let currentLines: string[] = [];
   textStore.subscribe(value => currentLines = value)();
