@@ -2,6 +2,7 @@
   import styles from './Statusbar.module.scss';
   import { modeStore, type Mode } from '$lib/stores/modeStore';
   import { textStore } from '$lib/stores/textStore';
+  import { saveNotificationStore } from '$lib/stores/saveNotificationStore';
   
   interface Props {
     centerText?: string;
@@ -12,6 +13,7 @@
   
   const currentMode = $derived($modeStore);
   const currentLines = $derived($textStore);
+  const saveNotification = $derived($saveNotificationStore);
   const lineCount = $derived(currentLines.length);
   
   // Calculate total word count across all lines
@@ -31,6 +33,9 @@
     `${wordCount}`
   );
   
+  // Center text shows save notification or default center text
+  const centerDisplay = $derived(saveNotification?.message || centerText);
+  
   function getModeDisplay(mode: Mode): string {
     if (mode === 'script') return 'Script';
     if (mode === 'interactive') return 'Interactive';
@@ -40,6 +45,6 @@
 
 <div class={styles.statusbar}>
   <div class={styles.left}>{getModeDisplay(currentMode)}</div>
-  <div class={styles.center}>{centerText}</div>
+  <div class={styles.center}>{centerDisplay}</div>
   <div class={styles.right}>{displayCounts || rightText}</div>
 </div>

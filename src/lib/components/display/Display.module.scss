@@ -51,10 +51,20 @@
   text-align: right;
   user-select: none;
   padding-right: 0.5rem;
+  transition: opacity 0.2s ease;
+}
+
+.line:empty::before {
+  opacity: 0.3;
 }
 
 .currentLine {
   background-color: #12151C; /* Darker background for current line */
+}
+
+.line:not(.currentLine) {
+  opacity: 0.6;
+  transition: opacity 0.2s ease;
 }
 
 .emptyState {

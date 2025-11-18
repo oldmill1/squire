@@ -1,6 +1,40 @@
 import { writable } from 'svelte/store';
+import { showSaveNotification } from './saveNotificationStore';
+
+const STORAGE_KEY = 'squire-text';
 
 export const textStore = writable<string[]>([]);
+
+// Save to localStorage
+export function saveToLocalStorage() {
+  if (typeof window === 'undefined') return; // Skip during SSR
+  
+  let currentLines: string[] = [];
+  textStore.subscribe(value => currentLines = value)();
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(currentLines));
+  
+  // Show save notification
+  showSaveNotification();
+}
+
+// Load from localStorage
+export function loadFromLocalStorage() {
+  if (typeof window === 'undefined') return false; // Skip during SSR
+  
+  const saved = localStorage.getItem(STORAGE_KEY);
+  if (saved) {
+    try {
+      const lines = JSON.parse(saved);
+      if (Array.isArray(lines)) {
+        textStore.set(lines);
+        return true;
+      }
+    } catch (e) {
+      console.error('Failed to parse saved text:', e);
+    }
+  }
+  return false;
+}
 
 export function appendText(char: string) {
   textStore.update(lines => {
@@ -14,6 +48,7 @@ export function appendText(char: string) {
       return newLines;
     }
   });
+  saveToLocalStorage();
 }
 
 export function insertNewline() {
@@ -26,6 +61,7 @@ export function insertNewline() {
       return [...lines, ''];
     }
   });
+  saveToLocalStorage();
 }
 
 export function deleteCharacter() {
@@ -45,6 +81,7 @@ export function deleteCharacter() {
     
     return newLines;
   });
+  saveToLocalStorage();
 }
 
 export function deleteForward() {
