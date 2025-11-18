@@ -38,12 +38,6 @@ export function initializeShortcuts() {
     description: 'Decrease font size'
   });
 
-  keyboardService.addShortcut({
-    key: '0',
-    action: resetFontSize,
-    description: 'Reset font size'
-  });
-
   // Example of more complex shortcuts
   keyboardService.addShortcut({
     key: 'r',
@@ -123,23 +117,24 @@ export function initializeShortcuts() {
               const commandChars = command.split('');
               
               // Process command for line selection
-              if (commandChars.includes('%')) {
-                const percentIndex = commandChars.indexOf('%');
-                // Check if there's a character after %
-                if (percentIndex + 1 < commandChars.length) {
-                  const lineNumberChar = commandChars[percentIndex + 1];
-                  const lineNumber = parseInt(lineNumberChar);
-                  
-                  if (!isNaN(lineNumber) && lineNumber > 0) {
-                    addSelectedLine(lineNumber);
-                    // Convert number to ordinal (1st, 2nd, 3rd, etc.)
-                    const ordinal = getOrdinal(lineNumber);
-                    console.log(`Selected the ${ordinal} line`);
-                  } else {
-                    console.log('Invalid line number after %');
-                  }
+              // Look for numbers in the command
+              let numberStr = '';
+              for (const char of commandChars) {
+                if (/\d/.test(char)) {
+                  numberStr += char;
+                }
+              }
+              
+              if (numberStr.length > 0) {
+                const lineNumber = parseInt(numberStr);
+                
+                if (!isNaN(lineNumber) && lineNumber > 0) {
+                  addSelectedLine(lineNumber);
+                  // Convert number to ordinal (1st, 2nd, 3rd, etc.)
+                  const ordinal = getOrdinal(lineNumber);
+                  console.log(`Selected the ${ordinal} line`);
                 } else {
-                  console.log('No line number specified after %');
+                  console.log('Invalid line number');
                 }
               }
               
@@ -153,8 +148,8 @@ export function initializeShortcuts() {
               addCommandShortcut();
             }
           });
-          // Remove the colon shortcut while in command mode
-          keyboardService.removeShortcut(':', true);
+          // Remove shortcuts while in command mode
+          keyboardService.removeShortcut(':');
         }
       },
       description: 'Switch to command mode'
