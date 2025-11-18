@@ -1,10 +1,8 @@
-# Squire
+# Squire (WIP)
 
-A minimalist, keyboard-driven text editor built with SvelteKit. Squire offers a clean, distraction-free writing experience with modal editing inspired by Vim, featuring three distinct modes for different editing workflows.
+Goal: To create keyboard-driven writing editor. Squire offers a distraction-free writing experience inspired by Vim.
 
-## Features
-
-### Modal Editing
+## Modes
 
 Squire operates in three distinct modes, each optimized for different tasks:
 
@@ -21,9 +19,9 @@ Type `i` to enter interactive mode for direct text input:
 - Use `Backspace` to delete characters
 - Press `Escape` to return to script mode
 
-When in interactive mode, the editor features a typewriter effect that automatically scrolls the viewport as you type, keeping your current line visible.
+When in interactive mode, the editor has typewriter mode, something you'll find only on desktop-class editors previously.
 
-#### **Command Mode**
+#### **Command-Line Mode (vim inpired)**
 Press `Shift+:` (or `:` on some keyboards) to enter command mode for advanced operations:
 - **Line Selection**: Select lines by number
   - `:3` - Select the 3rd line
