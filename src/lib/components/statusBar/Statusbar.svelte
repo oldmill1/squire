@@ -32,8 +32,8 @@
   );
   
   function getModeDisplay(mode: Mode): string {
-    if (mode === 'script') return 'Script Mode';
-    if (mode === 'interactive') return 'Interactive Mode';
+    if (mode === 'script') return 'Script';
+    if (mode === 'interactive') return 'Interactive';
     return mode; // This line should never be reached with current Mode type
   }
 </script>
