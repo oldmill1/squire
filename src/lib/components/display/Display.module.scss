@@ -14,14 +14,40 @@
   padding: 1rem;
 }
 
+.lineNumbers {
+  display: flex;
+  flex-direction: column;
+  color: #64748b;
+  min-width: 2rem;
+  text-align: right;
+  user-select: none;
+  padding-right: 0.5rem;
+  border-right: 1px solid #334155;
+}
+
+.lineNumber {
+  min-height: 1.7em;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.1em 0;
+}
+
+.contentWrapper {
+  display: flex;
+  gap: 1rem;
+  flex: 1;
+}
+
 .linesContainer {
   display: flex;
   flex-direction: column;
-  gap: 0.2em;
+  gap: 0;
+  flex: 1;
 }
 
 .line {
-  display: inline-block;
+  display: block;
   width: 100%;
   white-space: pre-wrap;
   word-wrap: break-word;
