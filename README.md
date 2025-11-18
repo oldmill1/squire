@@ -72,59 +72,6 @@ The status bar at the bottom displays:
 - `-` or `_` - Decrease font size
 - `Ctrl+R` - Custom refresh action (configurable)
 
-## Getting Started
-
-### Prerequisites
-
-- Node.js (v18 or higher recommended)
-- npm, yarn, or pnpm
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone <repository-url>
-cd squire
-```
-
-2. Install dependencies:
-```bash
-npm install
-# or
-yarn install
-# or
-pnpm install
-```
-
-3. Start the development server:
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-```
-
-4. Open your browser to `http://localhost:5173` (or the port shown in your terminal)
-
-### Building for Production
-
-```bash
-npm run build
-# or
-yarn build
-# or
-pnpm build
-```
-
-Preview the production build:
-```bash
-npm run preview
-# or
-yarn preview
-# or
-pnpm preview
-```
 
 ## Usage Tips
 
@@ -148,4 +95,4 @@ pnpm preview
 
 ## License
 
-[Add your license information here]
+MIT
