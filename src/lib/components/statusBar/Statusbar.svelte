@@ -12,14 +12,14 @@
   const currentMode = $derived($modeStore);
   
   function getModeDisplay(mode: Mode): string {
-    if (mode === 'script') return 'S';
-    if (mode === 'interactive') return 'I';
+    if (mode === 'script') return 'Script Mode';
+    if (mode === 'interactive') return 'Interactive Mode';
     return mode; // This line should never be reached with current Mode type
   }
 </script>
 
 <div class={styles.statusbar}>
-  <div class={styles.left}><span class={styles.modeIndicator}>{getModeDisplay(currentMode)}</span></div>
+  <div class={styles.left}>{getModeDisplay(currentMode)}</div>
   <div class={styles.center}>{centerText}</div>
   <div class={styles.right}>{rightText}</div>
 </div>
