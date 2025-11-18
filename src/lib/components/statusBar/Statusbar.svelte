@@ -24,9 +24,12 @@
   );
   
   // Format display text for line and word count
-  const displayLineCount = $derived(lineCount > 0 ? `${lineCount} lines` : '');
-  const displayWordCount = $derived(wordCount > 0 ? `${wordCount} words` : '');
-  const displayCounts = $derived([displayLineCount, displayWordCount].filter(Boolean).join(' • '));
+  const displayCounts = $derived(
+    lineCount === 0 && wordCount === 0 ? '' :
+    lineCount > 0 && wordCount > 0 ? `${lineCount}(${wordCount})` :
+    lineCount > 0 ? `${lineCount}` :
+    `${wordCount}`
+  );
   
   function getModeDisplay(mode: Mode): string {
     if (mode === 'script') return 'Script Mode';
