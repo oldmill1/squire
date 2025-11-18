@@ -1,38 +1,153 @@
-# sv
+# Squire
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A minimalist, keyboard-driven text editor built with SvelteKit. Squire offers a clean, distraction-free writing experience with modal editing inspired by Vim, featuring three distinct modes for different editing workflows.
 
-## Creating a project
+## Features
 
-If you're seeing this, you've probably already done this step. Congrats!
+### Modal Editing
 
-```sh
-# create a new project in the current directory
-npx sv create
+Squire operates in three distinct modes, each optimized for different tasks:
 
-# create a new project in my-app
-npx sv create my-app
+#### **Script Mode** (Default)
+The default mode when the editor starts. In script mode, you can:
+- Navigate and view your document
+- Use keyboard shortcuts for various commands
+- Switch to other modes using mode-specific keys
+
+#### **Interactive Mode**
+Type `i` to enter interactive mode for direct text input:
+- Type characters directly into the document
+- Press `Enter` to create new lines
+- Use `Backspace` to delete characters
+- Press `Escape` to return to script mode
+
+When in interactive mode, the editor features a typewriter effect that automatically scrolls the viewport as you type, keeping your current line visible.
+
+#### **Command Mode**
+Press `Shift+:` (or `:` on some keyboards) to enter command mode for advanced operations:
+- **Line Selection**: Select lines by number
+  - `:3` - Select the 3rd line
+  - `:1,5` - Select lines 1 through 5
+  - `:%` - Select all lines
+- **Line Deletion**: Delete lines using the `d` command
+  - `:3d` - Delete the 3rd line
+  - `:1,5d` - Delete lines 1 through 5
+  - `:%d` - Delete all lines
+- Press `Escape` to cancel and return to script mode
+- Press `Enter` to execute the command
+
+### Text Editing
+
+- **Line-based editing**: Text is organized into lines, making it easy to navigate and manipulate
+- **Visual line selection**: Selected lines are highlighted in the display
+- **Current line indicator**: The line you're currently editing is visually distinguished
+- **Smart cursor**: A blinking cursor shows your current position, with special handling for empty lines
+
+### Auto-Save
+
+- **Automatic saving**: All changes are automatically saved to browser localStorage
+- **Save notifications**: A timestamp notification appears in the status bar when changes are saved
+- **Persistent storage**: Your work is automatically restored when you reload the page
+
+### Display Features
+
+- **Adjustable font size**: 
+  - Press `+` or `=` to increase font size
+  - Press `-` or `_` to decrease font size
+  - Font size range: 0.5rem to 3rem
+- **Empty state**: When starting fresh, the editor displays "Squire" as a placeholder
+- **Typewriter scrolling**: In interactive mode, the viewport automatically scrolls to keep your current line visible
+
+### Status Bar
+
+The status bar at the bottom displays:
+- **Left**: Current mode (Script/Interactive) or command input (`:command`)
+- **Center**: Save notification timestamp (when available)
+- **Right**: Line and word count (format: `lines(words)`)
+
+### Keyboard Shortcuts
+
+- `i` - Enter interactive mode (from script mode)
+- `Shift+:` or `:` - Enter command mode (from script mode)
+- `Escape` - Return to script mode (from interactive or command mode)
+- `+` or `=` - Increase font size
+- `-` or `_` - Decrease font size
+- `Ctrl+R` - Custom refresh action (configurable)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js (v18 or higher recommended)
+- npm, yarn, or pnpm
+
+### Installation
+
+1. Clone the repository:
+```bash
+git clone <repository-url>
+cd squire
 ```
 
-## Developing
+2. Install dependencies:
+```bash
+npm install
+# or
+yarn install
+# or
+pnpm install
+```
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```sh
+3. Start the development server:
+```bash
 npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+# or
+yarn dev
+# or
+pnpm dev
 ```
 
-## Building
+4. Open your browser to `http://localhost:5173` (or the port shown in your terminal)
 
-To create a production version of your app:
+### Building for Production
 
-```sh
+```bash
 npm run build
+# or
+yarn build
+# or
+pnpm build
 ```
 
-You can preview the production build with `npm run preview`.
+Preview the production build:
+```bash
+npm run preview
+# or
+yarn preview
+# or
+pnpm preview
+```
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Usage Tips
+
+1. **Starting fresh**: When you first open Squire, you'll see "Squire" displayed. Press `i` to start typing.
+
+2. **Line operations**: Use command mode (`:`) to quickly select and delete specific lines or ranges.
+
+3. **Font adjustment**: Adjust the font size to your preference using `+` and `-` keys for comfortable reading.
+
+4. **Auto-save**: Your work is automatically saved as you type. The save notification shows when your last change was saved.
+
+5. **Mode switching**: Remember that `Escape` always returns you to script mode, where you can use shortcuts and commands.
+
+## Technical Details
+
+- Built with **SvelteKit** and **Svelte 5**
+- Uses **SCSS modules** for styling
+- State management via **Svelte stores**
+- Keyboard input handled through a custom keyboard service
+- Data persistence via **localStorage**
+
+## License
+
+[Add your license information here]
