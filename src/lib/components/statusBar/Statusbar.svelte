@@ -3,6 +3,7 @@
   import { modeStore, type Mode } from '$lib/stores/modeStore';
   import { textStore } from '$lib/stores/textStore';
   import { saveNotificationStore } from '$lib/stores/saveNotificationStore';
+  import { commandStore } from '$lib/stores/commandStore';
   
   interface Props {
     centerText?: string;
@@ -14,6 +15,7 @@
   const currentMode = $derived($modeStore);
   const currentLines = $derived($textStore);
   const saveNotification = $derived($saveNotificationStore);
+  const currentCommand = $derived($commandStore);
   const lineCount = $derived(currentLines.length);
   
   // Calculate total word count across all lines
@@ -36,15 +38,21 @@
   // Center text shows save notification or default center text
   const centerDisplay = $derived(saveNotification?.message || centerText);
   
+  // Left section shows mode and command input when in command mode
+  const leftDisplay = $derived(
+    currentMode === 'command' ? `:${currentCommand}` : getModeDisplay(currentMode)
+  );
+  
   function getModeDisplay(mode: Mode): string {
     if (mode === 'script') return 'Script';
     if (mode === 'interactive') return 'Interactive';
+    if (mode === 'command') return ':';
     return mode; // This line should never be reached with current Mode type
   }
 </script>
 
 <div class={styles.statusbar}>
-  <div class={styles.left}>{getModeDisplay(currentMode)}</div>
+  <div class={styles.left}>{leftDisplay}</div>
   <div class={styles.center}>{centerDisplay}</div>
   <div class={styles.right}>{displayCounts || rightText}</div>
 </div>

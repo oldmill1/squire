@@ -2,6 +2,7 @@ import { keyboardService } from './keyboardService';
 import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/fontSizeStore';
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
 import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
+import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
 
 export function initializeShortcuts() {
   // Font size shortcuts
@@ -78,6 +79,61 @@ export function initializeShortcuts() {
   // Add the initial "i" shortcut
   addInteractiveShortcut();
 
+  // Helper function to add command shortcut
+  const addCommandShortcut = () => {
+    keyboardService.addShortcut({
+      key: ':',
+      shiftKey: true,
+      action: () => {
+        const currentMode = getMode();
+        if (currentMode === 'script') {
+          setMode('command');
+          console.log('Switched to command mode');
+          // Set up command mode handlers
+          keyboardService.setCharacterInputHandler((char: string) => {
+            // Append character to command
+            appendToCommand(char);
+          });
+          keyboardService.setSpecialKeyHandler((key: string) => {
+            if (key === 'Escape') {
+              // Exit command mode on Escape
+              setMode('script');
+              keyboardService.clearCharacterInputHandler();
+              keyboardService.clearSpecialKeyHandler();
+              clearCommand();
+              // Re-add shortcuts when returning to script mode
+              addInteractiveShortcut();
+              addCommandShortcut();
+              console.log('Exited command mode');
+            } else if (key === 'Backspace') {
+              // Handle backspace in command mode
+              removeFromCommand();
+            } else if (key === 'Enter') {
+              // Handle command execution on Enter
+              const command = getCommand();
+              // Convert command string to array of characters
+              const commandChars = command.split('');
+              console.log('Command characters:', commandChars);
+              clearCommand();
+              setMode('script');
+              keyboardService.clearCharacterInputHandler();
+              keyboardService.clearSpecialKeyHandler();
+              // Re-add shortcuts when returning to script mode
+              addInteractiveShortcut();
+              addCommandShortcut();
+            }
+          });
+          // Remove the colon shortcut while in command mode
+          keyboardService.removeShortcut(':', true);
+        }
+      },
+      description: 'Switch to command mode'
+    });
+  };
+
+  // Add the initial command shortcut
+  addCommandShortcut();
+
   keyboardService.addShortcut({
     key: 'Escape',
     action: () => {
@@ -87,6 +143,8 @@ export function initializeShortcuts() {
       keyboardService.clearSpecialKeyHandler();
       // Re-add the "i" shortcut when returning to script mode
       addInteractiveShortcut();
+      // Re-add the colon shortcut when returning to script mode
+      addCommandShortcut();
     },
     description: 'Switch to script mode'
   });
