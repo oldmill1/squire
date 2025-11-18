@@ -3,7 +3,7 @@
   width: 3px;
   height: 1.4em;
   vertical-align: text-bottom;
-  margin-left: 1px;
+  margin-left: -8px; /* Aggressive negative margin to overlap text */
   transition: opacity 0.15s ease;
   pointer-events: none;
   position: relative;

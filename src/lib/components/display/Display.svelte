@@ -138,12 +138,13 @@
           {@const lineNum = index + 1}
           {@const isSelected = selectedLines.includes(lineNum)}
           {@const isCurrent = index === currentLine}
+          {@const cleanLine = line.replace(/\s+$/, '')}
           <span 
             class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''}`} 
             data-line={lineNum}
             data-selected={isSelected}
           >
-            {line}
+            {cleanLine}
             {#if isCurrent}
               <Cursor />
             {/if}
