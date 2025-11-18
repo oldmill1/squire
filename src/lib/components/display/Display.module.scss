@@ -26,6 +26,13 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   min-height: 1.2em;
+  padding: 0.1em 0.2em;
+  border-radius: 0.2em;
+  transition: background-color 0.2s ease;
+}
+
+.currentLine {
+  background-color: #12151C; /* Darker background for current line */
 }
 
 .emptyState {

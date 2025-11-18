@@ -3,11 +3,13 @@
   import { fontSizeStore } from '$lib/stores/fontSizeStore';
   import { textStore, getLines } from '$lib/stores/textStore';
   import { modeStore } from '$lib/stores/modeStore';
+  import { currentLineStore } from '$lib/stores/currentLineStore';
   import { onMount } from 'svelte';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
   const currentMode = $derived($modeStore);
+  const currentLine = $derived($currentLineStore);
   let showSquire = $state(false);
   let fading = $state(false);
 
@@ -34,6 +36,11 @@
       fading = false;
     }
   });
+
+  $effect(() => {
+    // Update current line to be the last line (or 0 if no lines)
+    currentLineStore.set(currentLines.length > 0 ? currentLines.length - 1 : 0);
+  });
 </script>
 
 <div class={styles.display} style="font-size: {fontSize}rem;">
@@ -42,7 +49,7 @@
   {:else}
     <div class={styles.linesContainer}>
       {#each currentLines as line, index}
-        <span class={styles.line} data-line={index + 1}>{line}</span>
+        <span class={`${styles.line} ${index === currentLine ? styles.currentLine : ''}`} data-line={index + 1}>{line}</span>
       {/each}
     </div>
   {/if}
