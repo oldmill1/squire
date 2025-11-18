@@ -8,5 +8,9 @@
 </script>
 
 <div class={styles.display} style="font-size: {fontSize}rem;">
-  {currentText}
+  {#if currentText.trim() === ''}
+    <div class={styles.emptyState}>Squire</div>
+  {:else}
+    {currentText}
+  {/if}
 </div>

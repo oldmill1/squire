@@ -5,7 +5,42 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Arizonia&display=swap" rel="stylesheet">
+		<style>
+			/* Hide the empty state initially */
+			.emptyState {
+				opacity: 0;
+				transition: opacity 0.3s ease-in;
+			}
+			
+			/* Show it only when fonts are loaded */
+			.fonts-loaded .emptyState {
+				opacity: 1;
+			}
+			
+			/* Fallback styling for before font loads */
+			.emptyState {
+				font-family: Georgia, serif;
+				font-style: italic;
+				color: #94a3b8;
+			}
+		</style>
+		<script>
+			// Check if fonts are loaded, then show the text
+			if ('fonts' in document) {
+				Promise.all([
+					document.fonts.load('400 5rem Arizonia'),
+					document.fonts.load('400 1rem JetBrains Mono')
+				]).then(() => {
+					document.documentElement.classList.add('fonts-loaded');
+				});
+			} else {
+				// Fallback for browsers that don't support font loading API
+				setTimeout(() => {
+					document.documentElement.classList.add('fonts-loaded');
+				}, 1000);
+			}
+		</script>
 		<link rel="stylesheet" href="/src/lib/styles/reset.css" />
 		%sveltekit.head%
 	</head>
