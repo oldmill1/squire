@@ -1,5 +1,6 @@
 import { writable } from 'svelte/store';
 import { showSaveNotification } from './saveNotificationStore';
+import { moveCursorToEndOfLine } from './cursorStore';
 
 const STORAGE_KEY = 'squire-text';
 
@@ -45,6 +46,8 @@ export function appendText(char: string) {
       // Append to the last line
       const newLines = [...lines];
       newLines[newLines.length - 1] += char;
+      // Update cursor position to end of the modified line
+      moveCursorToEndOfLine(newLines[newLines.length - 1]);
       return newLines;
     }
   });
@@ -55,9 +58,11 @@ export function insertNewline() {
   textStore.update(lines => {
     if (lines.length === 0) {
       // No lines exist, create an empty line
+      moveCursorToEndOfLine('');
       return [''];
     } else {
       // Add a new empty line
+      moveCursorToEndOfLine('');
       return [...lines, ''];
     }
   });
@@ -74,9 +79,13 @@ export function deleteCharacter() {
     if (lastLine.length > 0) {
       // Remove last character from current line
       newLines[newLines.length - 1] = lastLine.slice(0, -1);
+      // Update cursor position to end of the modified line
+      moveCursorToEndOfLine(newLines[newLines.length - 1]);
     } else if (newLines.length > 1) {
       // Remove the empty line
       newLines.pop();
+      // Update cursor position to end of the new last line
+      moveCursorToEndOfLine(newLines[newLines.length - 1]);
     }
     
     return newLines;

@@ -6,6 +6,7 @@
   import { currentLineStore } from '$lib/stores/currentLineStore';
   import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
   import { onMount } from 'svelte';
+  import Cursor from '../cursor/Cursor.svelte';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
@@ -141,7 +142,12 @@
             class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''}`} 
             data-line={lineNum}
             data-selected={isSelected}
-          >{line}</span>
+          >
+            {line}
+            {#if isCurrent}
+              <Cursor />
+            {/if}
+          </span>
         {/each}
       </div>
     </div>

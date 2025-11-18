@@ -1,0 +1,37 @@
+.cursor {
+  display: inline-block;
+  width: 3px;
+  height: 1.4em;
+  vertical-align: text-bottom;
+  margin-left: 1px;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+  position: relative;
+  border-radius: 2px;
+  background: linear-gradient(135deg, 
+    #7dd3fc 0%,     /* Light pastel blue-green */
+    #6ee7b7 25%,    /* Pastel green */
+    #34d399 50%,    /* Medium pastel green */
+    #6ee7b7 75%,    /* Pastel green */
+    #7dd3fc 100%    /* Light pastel blue-green */
+  );
+  box-shadow: 
+    0 0 8px rgba(110, 231, 183, 0.6),   /* Soft green glow */
+    0 0 12px rgba(110, 231, 183, 0.3),  /* Outer glow */
+    inset 0 0 2px rgba(255, 255, 255, 0.6); /* Inner highlight */
+}
+
+.cursorInner {
+  position: absolute;
+  top: 2px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 1px;
+  height: 40%;
+  background: linear-gradient(to bottom, 
+    rgba(255, 255, 255, 0.8) 0%, 
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0.1) 100%
+  );
+  border-radius: 1px;
+}
