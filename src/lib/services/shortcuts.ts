@@ -3,7 +3,7 @@ import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/f
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
 import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
 import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
-import { addSelectedLine, getSelectedLines } from '$lib/stores/selectedLinesStore';
+import { setSelectedLines, addSelectedLine, getSelectedLines } from '$lib/stores/selectedLinesStore';
 
 // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
 function getOrdinal(n: number): string {
@@ -117,24 +117,35 @@ export function initializeShortcuts() {
               const commandChars = command.split('');
               
               // Process command for line selection
-              // Look for numbers in the command
-              let numberStr = '';
-              for (const char of commandChars) {
-                if (/\d/.test(char)) {
-                  numberStr += char;
+              // Check for wildcard % to select all lines
+              if (commandChars.length === 1 && commandChars[0] === '%') {
+                // Select all lines - get current line count from textStore
+                const currentLines = getLines();
+                const allLineNumbers = Array.from({ length: currentLines.length }, (_, i) => i + 1);
+                setSelectedLines(allLineNumbers);
+                console.log(`Selected all ${currentLines.length} lines:`, allLineNumbers);
+                console.log('Store now contains:', getSelectedLines());
+              } else {
+                // Look for numbers in the command
+                let numberStr = '';
+                for (const char of commandChars) {
+                  if (/\d/.test(char)) {
+                    numberStr += char;
+                  }
                 }
-              }
-              
-              if (numberStr.length > 0) {
-                const lineNumber = parseInt(numberStr);
                 
-                if (!isNaN(lineNumber) && lineNumber > 0) {
-                  addSelectedLine(lineNumber);
-                  // Convert number to ordinal (1st, 2nd, 3rd, etc.)
-                  const ordinal = getOrdinal(lineNumber);
-                  console.log(`Selected the ${ordinal} line`);
-                } else {
-                  console.log('Invalid line number');
+                if (numberStr.length > 0) {
+                  const lineNumber = parseInt(numberStr);
+                  
+                  if (!isNaN(lineNumber) && lineNumber > 0) {
+                    addSelectedLine(lineNumber);
+                    // Convert number to ordinal (1st, 2nd, 3rd, etc.)
+                    const ordinal = getOrdinal(lineNumber);
+                    console.log(`Selected the ${ordinal} line`);
+                    console.log('Store now contains:', getSelectedLines());
+                  } else {
+                    console.log('Invalid line number');
+                  }
                 }
               }
               

@@ -43,5 +43,7 @@ export function getSelectedLines(): number[] {
 
 export function isLineSelected(lineNumber: number): boolean {
   const lines = getSelectedLines();
-  return lines.includes(lineNumber);
+  const isSelected = lines.includes(lineNumber);
+  console.log(`isLineSelected(${lineNumber}):`, isSelected, 'store contains:', lines);
+  return isSelected;
 }

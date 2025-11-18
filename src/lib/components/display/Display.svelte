@@ -4,12 +4,14 @@
   import { textStore, getLines } from '$lib/stores/textStore';
   import { modeStore } from '$lib/stores/modeStore';
   import { currentLineStore } from '$lib/stores/currentLineStore';
+  import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
   import { onMount } from 'svelte';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
   const currentMode = $derived($modeStore);
   const currentLine = $derived($currentLineStore);
+  const selectedLines = $derived($selectedLinesStore);
   let showSquire = $state(false);
   let fading = $state(false);
 
@@ -41,6 +43,11 @@
     // Update current line to be the last line (or 0 if no lines)
     currentLineStore.set(currentLines.length > 0 ? currentLines.length - 1 : 0);
   });
+
+  $effect(() => {
+    // Debug: Log when selectedLines changes
+    console.log('Display: selectedLines changed:', selectedLines);
+  });
 </script>
 
 <div class={styles.display} style="font-size: {fontSize}rem;">
@@ -50,7 +57,14 @@
     <div class={styles.contentWrapper}>
       <div class={styles.linesContainer}>
         {#each currentLines as line, index}
-          <span class={`${styles.line} ${index === currentLine ? styles.currentLine : ''}`} data-line={index + 1}>{line}</span>
+          {@const lineNum = index + 1}
+          {@const isSelected = selectedLines.includes(lineNum)}
+          {@const isCurrent = index === currentLine}
+          <span 
+            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''}`} 
+            data-line={lineNum}
+            data-selected={isSelected}
+          >{line}</span>
         {/each}
       </div>
     </div>

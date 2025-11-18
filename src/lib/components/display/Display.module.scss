@@ -62,7 +62,16 @@
   background-color: #12151C; /* Darker background for current line */
 }
 
-.line:not(.currentLine) {
+.selectedLine {
+  background-color: #e6f3ff !important; /* Light pastel blue background with higher specificity */
+  color: #1a365d !important; /* Darker text for contrast */
+}
+
+.selectedLine::before {
+  color: #2c5282 !important; /* Darker line number for selected lines */
+}
+
+.line:not(.currentLine):not(.selectedLine) {
   opacity: 0.6;
   transition: opacity 0.2s ease;
 }
