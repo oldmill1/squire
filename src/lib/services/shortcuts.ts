@@ -3,6 +3,14 @@ import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/f
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
 import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
 import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
+import { addSelectedLine, getSelectedLines } from '$lib/stores/selectedLinesStore';
+
+// Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
+function getOrdinal(n: number): string {
+  const s = ["th", "st", "nd", "rd"];
+  const v = n % 100;
+  return n + (s[(v - 20) % 10] || s[v] || s[0]);
+}
 
 export function initializeShortcuts() {
   // Font size shortcuts
@@ -113,6 +121,28 @@ export function initializeShortcuts() {
               const command = getCommand();
               // Convert command string to array of characters
               const commandChars = command.split('');
+              
+              // Process command for line selection
+              if (commandChars.includes('%')) {
+                const percentIndex = commandChars.indexOf('%');
+                // Check if there's a character after %
+                if (percentIndex + 1 < commandChars.length) {
+                  const lineNumberChar = commandChars[percentIndex + 1];
+                  const lineNumber = parseInt(lineNumberChar);
+                  
+                  if (!isNaN(lineNumber) && lineNumber > 0) {
+                    addSelectedLine(lineNumber);
+                    // Convert number to ordinal (1st, 2nd, 3rd, etc.)
+                    const ordinal = getOrdinal(lineNumber);
+                    console.log(`Selected the ${ordinal} line`);
+                  } else {
+                    console.log('Invalid line number after %');
+                  }
+                } else {
+                  console.log('No line number specified after %');
+                }
+              }
+              
               console.log('Command characters:', commandChars);
               clearCommand();
               setMode('script');
