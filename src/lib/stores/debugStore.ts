@@ -30,3 +30,11 @@ export function updateSliderValue(value: number) {
 		sliderValue: value
 	}));
 }
+
+export function resetDebugStore() {
+	debugStore.set({
+		transformValue: 0,
+		sliderValue: 0,
+		sliderMax: 0
+	});
+}

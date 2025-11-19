@@ -9,7 +9,7 @@
   import { tweened } from 'svelte/motion';
   import Cursor from '../cursor/Cursor.svelte';
   import { animationService } from '$lib/services/animationService';
-  import { debugStore, updateTransformValue, updateSliderValue } from '$lib/stores/debugStore';
+  import { debugStore, updateTransformValue, updateSliderValue, resetDebugStore } from '$lib/stores/debugStore';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
@@ -102,6 +102,7 @@
       targetOffset = 0;
       typewriterOffsetValue = 0;
       animationService.cancel();
+      resetDebugStore();
     }
   });
 
