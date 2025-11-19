@@ -9,7 +9,7 @@
   import { tweened } from 'svelte/motion';
   import Cursor from '../cursor/Cursor.svelte';
   import { animationService } from '$lib/services/animationService';
-  import { debugStore, updateTransformValue, updateSliderValue, resetDebugStore } from '$lib/stores/debugStore';
+  import { debugStore, updateTransformValue, updateSliderValue, resetDebugStore, updateLineContainerHeight, updateLineCount } from '$lib/stores/debugStore';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
@@ -122,6 +122,34 @@
       animationService.cancel();
       typewriterOffsetValue = debugInfo.sliderValue;
       targetOffset = debugInfo.sliderValue;
+    }
+  });
+
+  $effect(() => {
+    // Update debug info with line container height and line count
+    // This effect runs when: container exists, transform changes, or line count changes
+    linesContainerRef;
+    typewriterOffsetValue;
+    currentLines.length;
+    
+    if (linesContainerRef) {
+      const updateDebugInfo = () => {
+        const height = linesContainerRef!.getBoundingClientRect().height;
+        const lineElements = linesContainerRef!.querySelectorAll('span');
+        const actualLineCount = lineElements.length;
+        
+        console.log('Updating debug info - height:', height, 'lineCount:', actualLineCount);
+        
+        // Update height first, then line count with a small delay
+        updateLineContainerHeight(height);
+        setTimeout(() => {
+          updateLineCount(actualLineCount);
+        }, 100);
+      };
+      
+      // Update immediately and also after a brief delay to catch any layout changes
+      requestAnimationFrame(updateDebugInfo);
+      setTimeout(updateDebugInfo, 50);
     }
   });
 </script>
