@@ -9,12 +9,14 @@
   import { tweened } from 'svelte/motion';
   import Cursor from '../cursor/Cursor.svelte';
   import { animationService } from '$lib/services/animationService';
+  import { debugStore, updateTransformValue, updateSliderValue } from '$lib/stores/debugStore';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
   const currentMode = $derived($modeStore);
   const currentLine = $derived($currentLineStore);
   const selectedLines = $derived($selectedLinesStore);
+  const debugInfo = $derived($debugStore);
   let showSquire = $state(false);
   let fading = $state(false);
   let linesContainerRef = $state<HTMLElement>();
@@ -105,7 +107,21 @@
 
   $effect(() => {
     // Debug: Log when selectedLines changes
-    console.log('Display: selectedLines changed:', selectedLines);
+    // console.log('Display: selectedLines changed:', selectedLines);
+  });
+
+  $effect(() => {
+    // Update debug store with transform value changes
+    updateTransformValue(typewriterOffsetValue);
+  });
+
+  $effect(() => {
+    // Sync slider changes back to transform value (when user moves slider)
+    if (debugInfo.sliderValue !== typewriterOffsetValue) {
+      animationService.cancel();
+      typewriterOffsetValue = debugInfo.sliderValue;
+      targetOffset = debugInfo.sliderValue;
+    }
   });
 </script>
 

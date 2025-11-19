@@ -59,7 +59,6 @@ export function initializeShortcuts() {
         if (currentMode !== 'interactive') {
           setMode('interactive');
           clearSelectedLines();
-          console.log('Switched to interactive mode. Current text:', getLines());
           keyboardService.setCharacterInputHandler((char: string) => {
             appendText(char);
           });
@@ -233,7 +232,7 @@ export function initializeShortcuts() {
   keyboardService.addShortcut({
     key: 'Escape',
     action: () => {
-      console.log('Switched to script mode. Final text:', getLines());
+      // console.log('Switched to script mode. Final text:', getLines());
       setMode('script');
       keyboardService.clearCharacterInputHandler();
       keyboardService.clearSpecialKeyHandler();
