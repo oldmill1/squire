@@ -35,7 +35,8 @@
   gap: 0;
   flex: 1;
   counter-reset: line;
-  transition: transform 0.3s ease-out;
+  transform: translateY(0);
+  transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 .line {
