@@ -1,8 +1,10 @@
 <script lang="ts">
 	import styles from './DebugOverlay.module.scss';
 	import { debugStore, updateSliderValue } from '$lib/stores/debugStore';
+	import { modeStore } from '$lib/stores/modeStore';
 
 	const debugInfo = $derived($debugStore);
+	const currentMode = $derived($modeStore);
 
 	function handleSliderChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -10,9 +12,8 @@
 	}
 </script>
 
-<div class={styles.debugOverlay}>
+<div class={`${styles.debugOverlay} ${currentMode === 'interactive' ? styles.borderInteractive : styles.borderScript}`}>
 	<div class={styles.content}>
-		<div class={styles.title}>Debug Info</div>
 		<div class={styles.info}>Transform: {debugInfo.transformValue.toFixed(2)}px</div>
 		<div class={styles.info}>Line Container Height: {debugInfo.lineContainerHeight.toFixed(2)}px</div>
 		<div class={styles.info}>Number of Lines: {debugInfo.lineCount}</div>

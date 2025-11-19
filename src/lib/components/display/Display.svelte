@@ -134,8 +134,9 @@
     
     if (linesContainerRef) {
       const updateDebugInfo = () => {
-        const height = linesContainerRef!.getBoundingClientRect().height;
-        const lineElements = linesContainerRef!.querySelectorAll('span');
+        if (!linesContainerRef) return;
+        const height = linesContainerRef.getBoundingClientRect().height;
+        const lineElements = linesContainerRef.querySelectorAll('span');
         const actualLineCount = lineElements.length;
         
         // Update height and line count
