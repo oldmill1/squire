@@ -30,10 +30,9 @@
 
 	// Watch for line container height changes
 	$effect(() => {
-		const heightDiff = Math.abs(debugInfo.lineContainerHeight - prevLineContainerHeight);
-		// Only trigger if height changes by more than 0.1px to avoid noise
-		if (heightDiff > 0.1) {
-			console.log('Height changed from', prevLineContainerHeight, 'to', debugInfo.lineContainerHeight);
+		console.log('Height effect running - current:', debugInfo.lineContainerHeight, 'previous:', prevLineContainerHeight);
+		if (debugInfo.lineContainerHeight !== prevLineContainerHeight) {
+			console.log('Height changed! Showing dot');
 			prevLineContainerHeight = debugInfo.lineContainerHeight;
 			showLineContainerDot = true;
 			setTimeout(() => {
@@ -66,7 +65,7 @@
 		<div class={styles.info}>
 			Line Container Height: {debugInfo.lineContainerHeight.toFixed(2)}px
 			{#if showLineContainerDot}
-				<div class={`${styles.changeDot} ${styles.lineHeight}`}></div>
+				<div class={`${styles.changeDot} ${styles.transform}`}></div>
 			{/if}
 		</div>
 		<div class={styles.info}>
