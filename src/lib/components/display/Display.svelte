@@ -1,16 +1,15 @@
 <script lang="ts">
-  import styles from './Display.module.scss';
-  import { fontSizeStore } from '$lib/stores/fontSizeStore';
-  import { textStore, getLines } from '$lib/stores/textStore';
-  import { modeStore } from '$lib/stores/modeStore';
-  import { currentLineStore } from '$lib/stores/currentLineStore';
-  import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
-  import { onMount } from 'svelte';
-  import { tweened } from 'svelte/motion';
-  import Cursor from '../cursor/Cursor.svelte';
   import { animationService } from '$lib/services/animationService';
-  import { debugStore, updateTransformValue, updateSliderValue, resetDebugStore, updateLineContainerHeight, updateLineCount } from '$lib/stores/debugStore';
-  import { transformStore, loadTransformFromLocalStorage, updateTransform, resetTransform } from '$lib/stores/transformStore';
+  import { currentLineStore } from '$lib/stores/currentLineStore';
+  import { debugStore, resetDebugStore, updateLineContainerHeight, updateLineCount, updateTransformValue } from '$lib/stores/debugStore';
+  import { fontSizeStore } from '$lib/stores/fontSizeStore';
+  import { modeStore } from '$lib/stores/modeStore';
+  import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
+  import { textStore } from '$lib/stores/textStore';
+  import { loadTransformFromLocalStorage, resetTransform, updateTransform } from '$lib/stores/transformStore';
+  import { onMount } from 'svelte';
+  import Cursor from '../cursor/Cursor.svelte';
+  import styles from './Display.module.scss';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
@@ -119,6 +118,9 @@
       resetDebugStore();
       resetTransform();
       contentVisible = false;
+    } else {
+      // When new content is added after a clear, ensure it becomes visible again
+      contentVisible = true;
     }
   });
 

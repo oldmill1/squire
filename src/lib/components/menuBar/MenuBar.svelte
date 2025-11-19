@@ -57,11 +57,15 @@
     <button 
       type="button" 
       class={styles.menuItem} 
-      onclick={item.action}
-      onkeydown={(e) => {
+      on:click={(e) => {
+        item.action();
+        (e.currentTarget as HTMLButtonElement).blur();
+      }}
+      on:keydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           item.action();
+          (e.currentTarget as HTMLButtonElement).blur();
         }
       }}
       aria-label={`${item.label} (${item.shortcut})`}
