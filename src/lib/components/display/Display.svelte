@@ -42,7 +42,7 @@
   }
 
   function handleTypewriterEffect() {
-    if (currentMode === 'interactive' && linesContainerRef && currentLines.length >= 2) {
+    if (linesContainerRef && currentLines.length >= 2) {
       requestAnimationFrame(() => {
         const containerHeight = linesContainerRef!.getBoundingClientRect().height;
         
@@ -86,8 +86,8 @@
   });
 
   $effect(() => {
-    // Trigger typewriter effect when a new line is added in interactive mode
-    if (currentMode === 'interactive' && currentLines.length > previousLineCount && previousLineCount > 0) {
+    // Trigger typewriter effect when a new line is added
+    if (currentLines.length > previousLineCount && previousLineCount > 0) {
       // Use requestAnimationFrame immediately for smoother response
       requestAnimationFrame(handleTypewriterEffect);
     }
@@ -95,8 +95,8 @@
   });
 
   $effect(() => {
-    // Reset typewriter offset when switching modes or clearing text
-    if (currentMode !== 'interactive' || currentLines.length === 0) {
+    // Reset typewriter offset when clearing text
+    if (currentLines.length === 0) {
       targetOffset = 0;
       typewriterOffsetValue = 0;
       animationService.cancel();
