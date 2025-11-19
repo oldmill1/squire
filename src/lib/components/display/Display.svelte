@@ -8,6 +8,7 @@
   import { onMount } from 'svelte';
   import { tweened } from 'svelte/motion';
   import Cursor from '../cursor/Cursor.svelte';
+  import { animationService } from '$lib/services/animationService';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
@@ -17,13 +18,10 @@
   let showSquire = $state(false);
   let fading = $state(false);
   let linesContainerRef = $state<HTMLElement>();
+  let typewriterOffsetValue = $state(0);
+  let targetOffset = $state(0);
   let previousLineCount = $state(0);
   
-  const typewriterOffset = tweened(0, {
-    duration: 400,
-    easing: (t) => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2
-  });
-
   onMount(() => {
     // Show Squire after a brief delay to allow font loading
     setTimeout(() => {
@@ -32,6 +30,16 @@
       }
     }, 500);
   });
+
+  function animateToTarget() {
+    animationService.animate(
+      typewriterOffsetValue,
+      targetOffset,
+      (value) => {
+        typewriterOffsetValue = value;
+      }
+    );
+  }
 
   function handleTypewriterEffect() {
     if (currentMode === 'interactive' && linesContainerRef && currentLines.length >= 2) {
@@ -49,8 +57,8 @@
           const height = secondToLastLine.getBoundingClientRect().height;
           
           if (height > 0) {
-            const currentOffset = $typewriterOffset;
-            typewriterOffset.set(currentOffset + height);
+            targetOffset += height;
+            animateToTarget();
           }
         }
       });
@@ -89,7 +97,9 @@
   $effect(() => {
     // Reset typewriter offset when switching modes or clearing text
     if (currentMode !== 'interactive' || currentLines.length === 0) {
-      typewriterOffset.set(0);
+      targetOffset = 0;
+      typewriterOffsetValue = 0;
+      animationService.cancel();
     }
   });
 
@@ -104,7 +114,7 @@
     <div class={`${styles.emptyState} ${fading ? styles.fading : ''}`}>Squire</div>
   {:else}
     <div class={styles.contentWrapper}>
-      <div class={styles.linesContainer} bind:this={linesContainerRef} style="transform: translateY(-{$typewriterOffset}px);">
+      <div class={styles.linesContainer} bind:this={linesContainerRef} style="transform: translateY(-{typewriterOffsetValue}px);">
         {#each currentLines as line, index}
           {@const lineNum = index + 1}
           {@const isSelected = selectedLines.includes(lineNum)}
