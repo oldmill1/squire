@@ -37,6 +37,7 @@
   counter-reset: line;
   transform: translateY(0);
   transition: transform 0.4s cubic-bezier(0.23, 1, 0.32, 1);
+  padding-top: 1rem;
 }
 
 .line {
@@ -45,7 +46,7 @@
   white-space: pre-wrap;
   word-wrap: break-word;
   min-height: 1.7em;
-  padding: 0.1em 0.2em 0.1em 2.5rem;
+  padding: 0.1em 2rem 0.1em 2.5rem;
   border-radius: 0.2em;
   transition: background-color 0.2s ease;
   position: relative;

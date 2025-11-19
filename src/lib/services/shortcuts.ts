@@ -244,4 +244,26 @@ export function initializeShortcuts() {
     },
     description: 'Switch to script mode'
   });
+
+  // Clear all text shortcut
+  keyboardService.addShortcut({
+    key: 'dead',
+    altKey: true,
+    action: () => {
+      deleteAllLines();
+      console.log('Cleared all text with Option+N');
+    },
+    description: 'Clear all text'
+  });
+
+  // New document shortcut (Option+N)
+  keyboardService.addShortcut({
+    key: 'n',
+    altKey: true,
+    action: () => {
+      deleteAllLines();
+      console.log('New document created with Option+N');
+    },
+    description: 'Create new document'
+  });
 }

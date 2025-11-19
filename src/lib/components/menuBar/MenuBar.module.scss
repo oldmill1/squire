@@ -1,0 +1,29 @@
+.menubar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 20px;
+  background-color: #e6e6e6;
+  display: flex;
+  align-items: center;
+  color: #333;
+  font-size: 14px;
+  font-weight: 600;
+  padding: 0 10px;
+  font-family: 'JetBrains Mono', monospace;
+  border-bottom: 1px solid #ccc;
+  z-index: 1000;
+}
+
+.menuItem {
+  margin-right: 20px;
+  
+  u {
+    text-decoration: underline;
+  }
+  
+  &:hover {
+    color: #0066cc;
+  }
+}

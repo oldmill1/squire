@@ -34,6 +34,7 @@ body {
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     background-color:#191D24;
+    padding-top: 20px; /* Account for fixed menu bar */
 }
 
 /* A elements that don't have a class get default styles */
