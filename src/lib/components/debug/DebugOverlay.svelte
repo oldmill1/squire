@@ -14,11 +14,10 @@
 
 <div class={`${styles.debugOverlay} ${currentMode === 'interactive' ? styles.borderInteractive : styles.borderScript}`}>
 	<div class={styles.content}>
-		<div class={styles.info}>Transform: {debugInfo.transformValue.toFixed(2)}px</div>
-		<div class={styles.info}>Line Container Height: {debugInfo.lineContainerHeight.toFixed(2)}px</div>
-		<div class={styles.info}>Number of Lines: {debugInfo.lineCount}</div>
+		<div class={styles.info}>y: {debugInfo.transformValue.toFixed(2)}px</div>
+		<div class={styles.info}>h: {debugInfo.lineContainerHeight.toFixed(2)}px</div>
 		<div class={styles.sliderContainer}>
-			<label class={styles.sliderLabel} for="dummy-slider">Transform Control</label>
+			<label class={styles.sliderLabel} for="dummy-slider">transform</label>
 			<input 
 				type="range" 
 				min="0" 

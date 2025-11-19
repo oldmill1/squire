@@ -10,6 +10,7 @@
   import Cursor from '../cursor/Cursor.svelte';
   import { animationService } from '$lib/services/animationService';
   import { debugStore, updateTransformValue, updateSliderValue, resetDebugStore, updateLineContainerHeight, updateLineCount } from '$lib/stores/debugStore';
+  import { transformStore, loadTransformFromLocalStorage, updateTransform, resetTransform } from '$lib/stores/transformStore';
   
   const fontSize = $derived($fontSizeStore);
   const currentLines = $derived($textStore);
@@ -19,18 +20,31 @@
   const debugInfo = $derived($debugStore);
   let showSquire = $state(false);
   let fading = $state(false);
+  let contentVisible = $state(false);
   let linesContainerRef = $state<HTMLElement>();
   let typewriterOffsetValue = $state(0);
   let targetOffset = $state(0);
   let previousLineCount = $state(0);
   
   onMount(() => {
+    // Load saved transform from localStorage first
+    const savedTransform = loadTransformFromLocalStorage();
+    if (savedTransform !== 0) {
+      targetOffset = savedTransform;
+      typewriterOffsetValue = savedTransform;
+    }
+    
     // Show Squire after a brief delay to allow font loading
     setTimeout(() => {
       if (currentLines.length === 0 && currentMode === 'script') {
         showSquire = true;
       }
     }, 500);
+    
+    // Fade in content after transform is applied to prevent flash
+    setTimeout(() => {
+      contentVisible = true;
+    }, 100);
   });
 
   function animateToTarget() {
@@ -103,6 +117,8 @@
       typewriterOffsetValue = 0;
       animationService.cancel();
       resetDebugStore();
+      resetTransform();
+      contentVisible = false;
     }
   });
 
@@ -114,6 +130,8 @@
   $effect(() => {
     // Update debug store with transform value changes
     updateTransformValue(typewriterOffsetValue);
+    // Save transform to localStorage
+    updateTransform(typewriterOffsetValue);
   });
 
   $effect(() => {
@@ -157,7 +175,7 @@
   {#if showSquire}
     <div class={`${styles.emptyState} ${fading ? styles.fading : ''}`}>Squire</div>
   {:else}
-    <div class={styles.contentWrapper}>
+    <div class={`${styles.contentWrapper} ${contentVisible ? styles.visible : styles.hidden}`}>
       <div class={styles.linesContainer} bind:this={linesContainerRef} style="transform: translateY(-{typewriterOffsetValue}px);">
         {#each currentLines as line, index}
           {@const lineNum = index + 1}
