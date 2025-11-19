@@ -138,9 +138,7 @@
         const lineElements = linesContainerRef!.querySelectorAll('span');
         const actualLineCount = lineElements.length;
         
-        console.log('Updating debug info - height:', height, 'lineCount:', actualLineCount);
-        
-        // Update height first, then line count with a small delay
+        // Update height and line count
         updateLineContainerHeight(height);
         setTimeout(() => {
           updateLineCount(actualLineCount);
