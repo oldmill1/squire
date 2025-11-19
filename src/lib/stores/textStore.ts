@@ -69,6 +69,15 @@ export function insertNewline() {
   saveToLocalStorage();
 }
 
+export function appendLine(line: string) {
+  textStore.update(lines => {
+    const newLines = [...lines, line];
+    moveCursorToEndOfLine(line);
+    return newLines;
+  });
+  saveToLocalStorage();
+}
+
 export function deleteCharacter() {
   textStore.update(lines => {
     if (lines.length === 0) return [];

@@ -1,7 +1,7 @@
 import { keyboardService } from './keyboardService';
 import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/fontSizeStore';
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
-import { appendText, insertNewline, deleteCharacter, deleteForward, getLines } from '$lib/stores/textStore';
+import { appendText, insertNewline, deleteCharacter, deleteForward, getLines, appendLine } from '$lib/stores/textStore';
 import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
 import { setSelectedLines, addSelectedLine, getSelectedLines, clearSelectedLines } from '$lib/stores/selectedLinesStore';
 import { deleteLine, deleteAllLines, deleteLinesRange } from '$lib/stores/textStore';
@@ -116,98 +116,108 @@ export function initializeShortcuts() {
               const command = getCommand();
               // Convert command string to array of characters
               const commandChars = command.split('');
-              
-              // Process command for line selection
-              // Clear selection before processing any selection command
-              clearSelectedLines();
-              
-              // Check for wildcard % to select all lines
-              if (commandChars.length === 1 && commandChars[0] === '%') {
-                // Select all lines - get current line count from textStore
-                const currentLines = getLines();
-                const allLineNumbers = Array.from({ length: currentLines.length }, (_, i) => i + 1);
-                setSelectedLines(allLineNumbers);
-                console.log(`Selected all ${currentLines.length} lines:`, allLineNumbers);
-                console.log('Store now contains:', getSelectedLines());
-              } else if (commandChars.length >= 2 && commandChars[commandChars.length - 1] === 'd') {
-                // Check for delete commands (e.g., "3d", "20d", "%d", "1,3d", "2,4d")
-                const deleteChar = commandChars[commandChars.length - 1];
-                const commandPart = commandChars.slice(0, -1).join('');
-                
-                if (commandPart === '%') {
-                  // Delete all lines
-                  deleteAllLines();
-                  console.log('Deleted all lines');
-                } else if (commandPart.includes(',')) {
-                  // Handle range delete (e.g., "1,3d", "2,4d")
-                  const [startStr, endStr] = commandPart.split(',');
-                  const startLine = parseInt(startStr);
-                  const endLine = parseInt(endStr);
-                  
-                  if (!isNaN(startLine) && !isNaN(endLine) && startLine > 0 && endLine > 0) {
-                    deleteLinesRange(startLine, endLine);
-                    console.log(`Deleted lines ${startLine} through ${endLine}`);
-                  } else {
-                    console.log('Invalid range for delete command');
-                  }
-                } else {
-                  // Delete specific line
-                  const lineNumber = parseInt(commandPart);
-                  if (!isNaN(lineNumber) && lineNumber > 0) {
-                    deleteLine(lineNumber);
-                    const ordinal = getOrdinal(lineNumber);
-                    console.log(`Deleted the ${ordinal} line`);
-                  } else {
-                    console.log('Invalid line number for delete command');
-                  }
-                }
+
+              // First, handle special :s1 / :s2 / :s3 commands
+              const commandStrFull = commandChars.join('');
+              if (commandStrFull === 's1') {
+                appendLine('Velvet horizon lantern orchard, quantum lattice marigold syntax.');
+              } else if (commandStrFull === 's2') {
+                appendLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind.');
+              } else if (commandStrFull === 's3') {
+                appendLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind. Indigo cactus paragraph engines tumble sideways over whispering marble alphabets.');
               } else {
-                // Handle selection commands (including ranges)
-                const commandStr = commandChars.join('');
-                
-                if (commandStr.includes(',')) {
-                  // Handle range selection (e.g., "1,3", "2,4")
-                  const [startStr, endStr] = commandStr.split(',');
-                  const startLine = parseInt(startStr);
-                  const endLine = parseInt(endStr);
-                  
-                  if (!isNaN(startLine) && !isNaN(endLine) && startLine > 0 && endLine > 0) {
-                    const range = Array.from({ length: endLine - startLine + 1 }, (_, i) => startLine + i);
-                    const currentLines = getLines();
-                    const validRange = range.filter(line => line <= currentLines.length);
-                    
-                    // Set the selection to the range (replace any existing selection)
-                    setSelectedLines(validRange);
-                    console.log(`Selected lines ${startLine} through ${endLine}:`, validRange);
-                    console.log('Store now contains:', getSelectedLines());
+                // Process command for line selection
+                // Clear selection before processing any selection command
+                clearSelectedLines();
+
+                // Check for wildcard % to select all lines
+                if (commandChars.length === 1 && commandChars[0] === '%') {
+                  // Select all lines - get current line count from textStore
+                  const currentLines = getLines();
+                  const allLineNumbers = Array.from({ length: currentLines.length }, (_, i) => i + 1);
+                  setSelectedLines(allLineNumbers);
+                  console.log(`Selected all ${currentLines.length} lines:`, allLineNumbers);
+                  console.log('Store now contains:', getSelectedLines());
+                } else if (commandChars.length >= 2 && commandChars[commandChars.length - 1] === 'd') {
+                  // Check for delete commands (e.g., "3d", "20d", "%d", "1,3d", "2,4d")
+                  const deleteChar = commandChars[commandChars.length - 1];
+                  const commandPart = commandChars.slice(0, -1).join('');
+
+                  if (commandPart === '%') {
+                    // Delete all lines
+                    deleteAllLines();
+                    console.log('Deleted all lines');
+                  } else if (commandPart.includes(',')) {
+                    // Handle range delete (e.g., "1,3d", "2,4d")
+                    const [startStr, endStr] = commandPart.split(',');
+                    const startLine = parseInt(startStr);
+                    const endLine = parseInt(endStr);
+
+                    if (!isNaN(startLine) && !isNaN(endLine) && startLine > 0 && endLine > 0) {
+                      deleteLinesRange(startLine, endLine);
+                      console.log(`Deleted lines ${startLine} through ${endLine}`);
+                    } else {
+                      console.log('Invalid range for delete command');
+                    }
                   } else {
-                    console.log('Invalid range for selection');
-                  }
-                } else {
-                  // Look for numbers in the command (single line selection)
-                  let numberStr = '';
-                  for (const char of commandChars) {
-                    if (/\d/.test(char)) {
-                      numberStr += char;
+                    // Delete specific line
+                    const lineNumber = parseInt(commandPart);
+                    if (!isNaN(lineNumber) && lineNumber > 0) {
+                      deleteLine(lineNumber);
+                      const ordinal = getOrdinal(lineNumber);
+                      console.log(`Deleted the ${ordinal} line`);
+                    } else {
+                      console.log('Invalid line number for delete command');
                     }
                   }
-                  
-                  if (numberStr.length > 0) {
-                    const lineNumber = parseInt(numberStr);
-                    
-                    if (!isNaN(lineNumber) && lineNumber > 0) {
-                      setSelectedLines([lineNumber]);
-                      // Convert number to ordinal (1st, 2nd, 3rd, etc.)
-                      const ordinal = getOrdinal(lineNumber);
-                      console.log(`Selected the ${ordinal} line`);
+                } else {
+                  // Handle selection commands (including ranges)
+                  const commandStr = commandChars.join('');
+
+                  if (commandStr.includes(',')) {
+                    // Handle range selection (e.g., "1,3", "2,4")
+                    const [startStr, endStr] = commandStr.split(',');
+                    const startLine = parseInt(startStr);
+                    const endLine = parseInt(endStr);
+
+                    if (!isNaN(startLine) && !isNaN(endLine) && startLine > 0 && endLine > 0) {
+                      const range = Array.from({ length: endLine - startLine + 1 }, (_, i) => startLine + i);
+                      const currentLines = getLines();
+                      const validRange = range.filter(line => line <= currentLines.length);
+
+                      // Set the selection to the range (replace any existing selection)
+                      setSelectedLines(validRange);
+                      console.log(`Selected lines ${startLine} through ${endLine}:`, validRange);
                       console.log('Store now contains:', getSelectedLines());
                     } else {
-                      console.log('Invalid line number');
+                      console.log('Invalid range for selection');
+                    }
+                  } else {
+                    // Look for numbers in the command (single line selection)
+                    let numberStr = '';
+                    for (const char of commandChars) {
+                      if (/\d/.test(char)) {
+                        numberStr += char;
+                      }
+                    }
+
+                    if (numberStr.length > 0) {
+                      const lineNumber = parseInt(numberStr);
+
+                      if (!isNaN(lineNumber) && lineNumber > 0) {
+                        setSelectedLines([lineNumber]);
+                        // Convert number to ordinal (1st, 2nd, 3rd, etc.)
+                        const ordinal = getOrdinal(lineNumber);
+                        console.log(`Selected the ${ordinal} line`);
+                        console.log('Store now contains:', getSelectedLines());
+                      } else {
+                        console.log('Invalid line number');
+                      }
                     }
                   }
                 }
               }
-              
+
               console.log('Command characters:', commandChars);
               clearCommand();
               setMode('script');
