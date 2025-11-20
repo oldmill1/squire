@@ -184,14 +184,37 @@ export function deleteLine(lineNumber: number) {
     if (lines.length === 0 || lineNumber < 1 || lineNumber > lines.length) {
       return lines; // Return unchanged if invalid line number
     }
-    // Remove the specified line (lineNumber is 1-based, array is 0-based)
-    return lines.filter((_, index) => index !== lineNumber - 1);
+    
+    const cursor = getCursorPosition();
+    const newLines = lines.filter((_, index) => index !== lineNumber - 1);
+    
+    // Adjust cursor position if necessary
+    if (newLines.length === 0) {
+      // All lines deleted, reset cursor to 0,0
+      setCursorPosition(0, 0);
+      currentLineStore.set(0);
+    } else if (cursor.line === lineNumber - 1) {
+      // Cursor was on the deleted line
+      const newCursorLine = Math.min(lineNumber - 1, newLines.length - 1);
+      setCursorPosition(newCursorLine, 0);
+      currentLineStore.set(newCursorLine);
+    } else if (cursor.line > lineNumber - 1) {
+      // Cursor was after the deleted line, adjust its position
+      const newCursorLine = cursor.line - 1;
+      setCursorPosition(newCursorLine, Math.min(cursor.col, newLines[newCursorLine]?.length || 0));
+      currentLineStore.set(newCursorLine);
+    }
+    
+    return newLines;
   });
   saveToLocalStorage();
 }
 
 export function deleteAllLines() {
   textStore.set([]);
+  // Reset cursor position to 0,0 when all lines are deleted
+  setCursorPosition(0, 0);
+  currentLineStore.set(0);
   saveToLocalStorage();
 }
 
@@ -200,13 +223,32 @@ export function deleteLinesRange(startLine: number, endLine: number) {
     if (lines.length === 0 || startLine < 1 || endLine < 1 || startLine > lines.length) {
       return lines; // Return unchanged if invalid range
     }
-    // Adjust endLine if it's beyond the array length
-    const adjustedEndLine = Math.min(endLine, lines.length);
-    // Remove lines from startLine to endLine (inclusive, 1-based to 0-based)
-    return lines.filter((_, index) => {
+    
+    const cursor = getCursorPosition();
+    const newLines = lines.filter((_, index) => {
       const lineNumber = index + 1;
-      return lineNumber < startLine || lineNumber > adjustedEndLine;
+      return lineNumber < startLine || lineNumber > endLine;
     });
+    
+    // Adjust cursor position if necessary
+    if (newLines.length === 0) {
+      // All lines deleted, reset cursor to 0,0
+      setCursorPosition(0, 0);
+      currentLineStore.set(0);
+    } else if (cursor.line >= startLine - 1 && cursor.line <= endLine - 1) {
+      // Cursor was within deleted range, move to the line that took the place of the first deleted line
+      const newCursorLine = Math.min(startLine - 1, newLines.length - 1);
+      setCursorPosition(newCursorLine, 0);
+      currentLineStore.set(newCursorLine);
+    } else if (cursor.line > endLine - 1) {
+      // Cursor was after deleted range, adjust its position
+      const deletedCount = endLine - startLine + 1;
+      const newCursorLine = Math.max(0, cursor.line - deletedCount);
+      setCursorPosition(newCursorLine, Math.min(cursor.col, newLines[newCursorLine]?.length || 0));
+      currentLineStore.set(newCursorLine);
+    }
+    
+    return newLines;
   });
   saveToLocalStorage();
 }
