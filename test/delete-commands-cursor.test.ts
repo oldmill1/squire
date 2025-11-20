@@ -1,7 +1,7 @@
 import { describe, it, expect, beforeEach } from 'vitest';
-import { textStore, deleteAllLines, deleteLine, deleteLinesRange, loadFromLocalStorage, getLines } from '$lib/stores/textStore';
-import { getCursorPosition, setCursorPosition } from '$lib/stores/cursorStore';
-import { currentLineStore } from '$lib/stores/currentLineStore';
+import { textStore, deleteAllLines, deleteLine, deleteLinesRange, loadFromLocalStorage, getLines } from '../src/lib/stores/textStore';
+import { getCursorPosition, setCursorPosition } from '../src/lib/stores/cursorStore';
+import { currentLineStore } from '../src/lib/stores/currentLineStore';
 
 // Mock localStorage
 const localStorageMock = (() => {
