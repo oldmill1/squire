@@ -9,6 +9,7 @@
   import { textStore } from '$lib/stores/textStore';
   import { loadTransformFromLocalStorage, resetTransform, updateTransform } from '$lib/stores/transformStore';
   import { cursorStore, getCursorPosition } from '$lib/stores/cursorStore';
+  import { visualStore, getNormalizedSelection } from '$lib/stores/visualStore';
   import { onMount } from 'svelte';
   import Cursor from '../cursor/Cursor.svelte';
   import styles from './Display.module.scss';
@@ -20,6 +21,7 @@
   const selectedLines = $derived($selectedLinesStore);
   const debugInfo = $derived($debugStore);
   const cursorPosition = $derived($cursorStore);
+  const visualState = $derived($visualStore);
   const showLineNumbers = $derived($lineNumberVisibilityStore);
   let showSquire = $state(false);
   let fading = $state(false);
@@ -187,6 +189,50 @@
       setTimeout(updateDebugInfo, 50);
     }
   });
+
+  // Helper functions for visual selection
+  function getSelectionForLine(lineIndex: number): { start: number; end: number } | null {
+    if (!visualState.active || visualState.type !== 'char') {
+      return null;
+    }
+
+    const normalized = getNormalizedSelection();
+    if (!normalized) return null;
+
+    const { start, end } = normalized;
+    
+    // If line is outside selection range
+    if (lineIndex < start.line || lineIndex > end.line) {
+      return null;
+    }
+
+    // Single line selection
+    if (start.line === end.line) {
+      return { start: start.col, end: end.col };
+    }
+
+    // Multi-line selection
+    if (lineIndex === start.line) {
+      return { start: start.col, end: currentLines[lineIndex]?.length || 0 };
+    } else if (lineIndex === end.line) {
+      return { start: 0, end: end.col };
+    } else {
+      // Middle line - select entire line
+      return { start: 0, end: currentLines[lineIndex]?.length || 0 };
+    }
+  }
+
+  function renderLineWithSelection(line: string, lineIndex: number): string {
+    const selection = getSelectionForLine(lineIndex);
+    if (!selection) return line;
+
+    const { start, end } = selection;
+    const before = line.slice(0, start);
+    const selected = line.slice(start, end);
+    const after = line.slice(end);
+
+    return `${before}<span class="${styles.visualSelection}">${selected}</span>${after}`;
+  }
 </script>
 
 <div class={styles.display} style="font-size: {fontSize}rem;">
@@ -200,18 +246,47 @@
           {@const isSelected = selectedLines.includes(lineNum)}
           {@const isCurrent = index === currentLine}
           {@const cleanLine = line}
+          {@const hasSelection = visualState.active && visualState.type === 'char' && getSelectionForLine(index) !== null}
           <span 
-            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''} ${!showLineNumbers ? styles.hideLineNumbers : ''}`} 
+            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''} ${!showLineNumbers ? styles.hideLineNumbers : ''} ${hasSelection ? styles.hasVisualSelection : ''}`} 
             data-line={lineNum}
             data-selected={isSelected}
           >
             <div class={styles.lineContent}>
-              {#if isCurrent}
+              {#if isCurrent && !hasSelection}
                 {@const beforeCursor = cleanLine.slice(0, cursorPosition.col)}
                 {@const afterCursor = cleanLine.slice(cursorPosition.col)}
                 <div class={styles.rawText}>{beforeCursor}</div>
                 <Cursor isEmptyLine={cleanLine.length === 0} />
                 <div class={styles.rawText}>{afterCursor}</div>
+              {:else if hasSelection}
+                {@const selection = getSelectionForLine(index)}
+                {@const beforeSelection = cleanLine.slice(0, selection!.start)}
+                {@const selectedText = cleanLine.slice(selection!.start, selection!.end)}
+                {@const afterSelection = cleanLine.slice(selection!.end)}
+                
+                <!-- Check if cursor should be shown at selection end on this line -->
+                {@const showCursorAtEnd = isCurrent && visualState.active && visualState.end && visualState.end!.line === index}
+                {@const cursorPos = showCursorAtEnd ? visualState.end!.col : -1}
+                
+                <!-- Render before selection -->
+                <div class={styles.rawText}>{beforeSelection}</div>
+                
+                <!-- Render selected text with cursor if needed -->
+                {#if showCursorAtEnd && cursorPos >= selection!.start && cursorPos <= selection!.end}
+                  <!-- Cursor is inside the selection -->
+                  {@const beforeCursorInSelection = selectedText.slice(0, cursorPos - selection!.start)}
+                  {@const afterCursorInSelection = selectedText.slice(cursorPos - selection!.start)}
+                  <span class={styles.visualSelection}>{beforeCursorInSelection}</span>
+                  <Cursor isEmptyLine={false} />
+                  <span class={styles.visualSelection}>{afterCursorInSelection}</span>
+                {:else}
+                  <!-- No cursor in selection on this line -->
+                  <span class={styles.visualSelection}>{selectedText}</span>
+                {/if}
+                
+                <!-- Render after selection -->
+                <div class={styles.rawText}>{afterSelection}</div>
               {:else}
                 <div class={styles.rawText}>{cleanLine}</div>
               {/if}

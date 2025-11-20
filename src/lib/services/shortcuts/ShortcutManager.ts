@@ -4,6 +4,7 @@ import { setMode } from '$lib/stores/modeStore';
 import { NormalMode } from './modes/NormalMode';
 import { CommandMode } from './modes/CommandMode';
 import { InsertMode } from './modes/InsertMode';
+import { VisualMode } from './modes/VisualMode';
 
 export class ShortcutManager {
   private modes: Map<Mode, ModeHandler> = new Map();
@@ -14,6 +15,7 @@ export class ShortcutManager {
     this.registerMode(new NormalMode(this));
     this.registerMode(new CommandMode(this));
     this.registerMode(new InsertMode(this));
+    this.registerMode(new VisualMode(this));
     
     // Don't get initial mode from store - force normal mode on initialization
     this.currentMode = 'normal';

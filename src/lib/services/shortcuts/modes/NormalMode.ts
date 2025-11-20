@@ -7,6 +7,7 @@ import { ShortcutManager } from '../ShortcutManager';
 import { currentLineStore } from '$lib/stores/currentLineStore';
 import { textStore, getLines, deleteCurrentLine, pasteLineAfterCurrent } from '$lib/stores/textStore';
 import { setCursorLine, setCursorColumn, getCursorPosition, setCursorWantCol, moveCursorToLineEnd, setCursorPosition } from '$lib/stores/cursorStore';
+import { startVisualSelection } from '$lib/stores/visualStore';
 
 export class NormalMode implements ModeHandler {
   mode: Mode = 'normal';
@@ -72,6 +73,16 @@ export class NormalMode implements ModeHandler {
           this.manager.switchToMode('command');
         },
         description: 'Switch to command mode'
+      },
+      {
+        key: 'v',
+        action: () => {
+          this.clearPendingCommand();
+          const cursor = getCursorPosition();
+          startVisualSelection('char', { line: cursor.line, col: cursor.col });
+          this.manager.switchToMode('visual_char');
+        },
+        description: 'Enter character-wise visual mode'
       },
       {
         key: 'Escape',

@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-export type Mode = 'insert' | 'normal' | 'command';
+export type Mode = 'insert' | 'normal' | 'command' | 'visual_char';
 
 export const modeStore = writable<Mode>('normal');
 

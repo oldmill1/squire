@@ -18,17 +18,8 @@ export class InsertMode implements ModeHandler {
     // Clear selection when entering insert mode
     clearSelectedLines();
 
-    // Sync cursor position to end of current line if needed
-    // This fixes the bug where visual cursor is at end but logical position is at 0
-    const cursor = getCursorPosition();
-    const lines = getLines();
-    const currentLine = lines[cursor.line] || '';
-    
-    // Only move to end if the cursor column is 0 but there's content in the line
-    // This preserves intentional cursor positions while fixing the initialization bug
-    if (cursor.col === 0 && currentLine.length > 0) {
-      moveCursorToEndOfLine(currentLine);
-    }
+    // Don't automatically move cursor - preserve position from visual/normal mode
+    // This allows proper cursor positioning when coming from visual mode
 
     // Set up character input handler for typing
     keyboardService.setCharacterInputHandler((char: string) => {
