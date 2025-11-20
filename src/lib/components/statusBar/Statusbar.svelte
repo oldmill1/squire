@@ -1,9 +1,8 @@
 <script lang="ts">
   import styles from './Statusbar.module.scss';
-  import { modeStore, type Mode } from '$lib/stores/modeStore';
+  import ModeStatus from './ModeStatus.svelte';
   import { textStore } from '$lib/stores/textStore';
   import { saveNotificationStore } from '$lib/stores/saveNotificationStore';
-  import { commandStore } from '$lib/stores/commandStore';
   import { cursorStore } from '$lib/stores/cursorStore';
   
   interface Props {
@@ -13,10 +12,8 @@
   
   let { centerText = 'Center Status', rightText = 'Right Status' }: Props = $props();
   
-  const currentMode = $derived($modeStore);
   const currentLines = $derived($textStore);
   const saveNotification = $derived($saveNotificationStore);
-  const currentCommand = $derived($commandStore);
   const cursorPosition = $derived($cursorStore);
   const lineCount = $derived(currentLines.length);
   
@@ -55,23 +52,10 @@
   
   // Center text shows save notification or default center text
   const centerDisplay = $derived(saveNotification?.message || centerText);
-  
-  // Left section shows mode and command input when in command mode
-  const leftDisplay = $derived(
-    currentMode === 'command' ? `:${currentCommand}` : getModeDisplay(currentMode)
-  );
-  
-  function getModeDisplay(mode: Mode): string {
-    if (mode === 'normal') return '';
-    if (mode === 'insert') return 'Insert';
-    if (mode === 'command') return ':';
-    if (mode === 'visual_char') return 'Visual';
-    return mode; // This line should never be reached with current Mode type
-  }
 </script>
 
 <div class={styles.statusbar}>
-  <div class={styles.left}>{leftDisplay}</div>
+  <ModeStatus />
   <div class={styles.center}>{centerDisplay}</div>
   <div class={styles.right}>{displayCounts || rightText}</div>
 </div>
