@@ -1,5 +1,5 @@
 <script lang="ts">
-	import styles from './DebugOverlay.module.scss';
+	import styles from './DebugModule.module.scss';
 	import { debugStore, updateSliderValue } from '$lib/stores/debugStore';
 	import { modeStore } from '$lib/stores/modeStore';
 
@@ -12,7 +12,7 @@
 	}
 </script>
 
-<div class={`${styles.debugOverlay} ${currentMode === 'interactive' ? styles.borderInteractive : styles.borderScript}`}>
+<div class={`${styles.debugModule} ${currentMode === 'interactive' ? styles.borderInteractive : styles.borderScript}`}>
 	<div class={styles.content}>
 		<div class={styles.info}>y: {debugInfo.transformValue.toFixed(2)}px</div>
 		<div class={styles.info}>inc: {debugInfo.lastLineHeightIncrement.toFixed(2)}px</div>

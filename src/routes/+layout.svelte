@@ -1,7 +1,7 @@
 <script lang="ts">
 	import favicon from '$lib/assets/favicon.svg';
 	import MenuBar from '$lib/components/menuBar/MenuBar.svelte';
-	import DebugOverlay from '$lib/components/debug/DebugOverlay.svelte';
+	import DebugModule from '$lib/components/debug/DebugModule.svelte';
 
 	let { children } = $props();
 </script>
@@ -12,4 +12,4 @@
 
 <MenuBar />
 {@render children()}
-<DebugOverlay />
+<DebugModule />
