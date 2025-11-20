@@ -65,34 +65,63 @@
   }
 
   function handleTypewriterEffect() {
+    console.log('=== Typewriter Effect Started ===');
+    console.log('currentLines.length:', currentLines.length);
+    
     if (linesContainerRef && currentLines.length >= 2) {
       requestAnimationFrame(() => {
         const containerHeight = linesContainerRef!.getBoundingClientRect().height;
+        console.log('containerHeight:', containerHeight);
         
         if (containerHeight < 200) {
+          console.log('Container height too small, returning');
           return;
         }
         
         const lineElements = linesContainerRef!.querySelectorAll('span');
-        const secondToLastLine = lineElements[lineElements.length - 4];
+        console.log('lineElements.length:', lineElements.length);
         
-        if (secondToLastLine) {
-          const height = secondToLastLine.getBoundingClientRect().height;
+        // Find the last non-empty line element
+        let lastNonEmptyLine = null;
+        for (let i = lineElements.length - 1; i >= 0; i--) {
+          const line = lineElements[i];
+          const textContent = line.textContent?.trim();
+          if (textContent && textContent.length > 0) {
+            lastNonEmptyLine = line;
+            break;
+          }
+        }
+        
+        console.log('lastNonEmptyLine element:', lastNonEmptyLine);
+        
+        if (lastNonEmptyLine) {
+          const height = lastNonEmptyLine.getBoundingClientRect().height;
+          console.log('lastNonEmptyLine height:', height);
+          console.log('lastNonEmptyLine element content:', lastNonEmptyLine.textContent);
           
           // Add artificial value to height calculation
           const artificialOffset = 1; // You can adjust this value
           const adjustedHeight = height + artificialOffset;
+          console.log('adjustedHeight:', adjustedHeight);
           
-          // Debug: Add red border to second-to-last line
-          // (secondToLastLine as HTMLElement).style.border = '2px solid red';
+          // Debug: Add red border to last line
+          // (lastLine as HTMLElement).style.border = '2px solid red';
           
           if (height > 0) {
+            console.log('Updating line height increment to:', adjustedHeight);
             updateLineHeightIncrement(adjustedHeight);
             targetOffset += adjustedHeight;
+            console.log('New targetOffset:', targetOffset);
             animateToTarget();
+          } else {
+            console.log('Height is 0, not updating');
           }
+        } else {
+          console.log('No lastLine element found');
         }
       });
+    } else {
+      console.log('Conditions not met - linesContainerRef:', !!linesContainerRef, 'lines >= 2:', currentLines.length >= 2);
     }
   }
 
