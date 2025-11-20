@@ -34,7 +34,7 @@
   // Format display text for cursor position, line and word count
   const displayCounts = $derived(
     (() => {
-      const cursorPos = `${cursorPosition.col + 1},${cursorPosition.line + 1}`; // 1-based for display
+      const cursorPos = `(${cursorPosition.col + 1},${cursorPosition.line + 1})`; // 1-based for display
       
       if (lineCount === 0 && wordCount === 0) {
         return cursorPos;
@@ -42,11 +42,11 @@
       
       let countsText = '';
       if (lineCount > 0 && wordCount > 0) {
-        countsText = `${lineCount}(${wordCount})`;
+        countsText = `${lineCount}l ${wordCount}w`;
       } else if (lineCount > 0) {
-        countsText = `${lineCount}`;
+        countsText = `${lineCount}l`;
       } else {
-        countsText = `${wordCount}`;
+        countsText = `${wordCount}w`;
       }
       
       return `${cursorPos} ${countsText}`;
