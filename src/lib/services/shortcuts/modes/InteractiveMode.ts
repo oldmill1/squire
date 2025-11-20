@@ -31,7 +31,6 @@ export class InteractiveMode implements ModeHandler {
       } else if (key === 'Delete') {
         deleteForward();
       } else if (key === 'Escape') {
-        console.log('InteractiveMode: Escape pressed, switching to script mode');
         this.manager.switchToMode('script');
       }
     });
