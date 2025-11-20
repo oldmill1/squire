@@ -76,7 +76,7 @@
           const adjustedHeight = height + artificialOffset;
           
           // Debug: Add red border to second-to-last line
-          (secondToLastLine as HTMLElement).style.border = '2px solid red';
+          // (secondToLastLine as HTMLElement).style.border = '2px solid red';
           
           if (height > 0) {
             updateLineHeightIncrement(adjustedHeight);
