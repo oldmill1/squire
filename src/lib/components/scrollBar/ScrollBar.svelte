@@ -1,12 +1,15 @@
 <script lang="ts">
   import styles from './ScrollBar.module.scss';
+  import { updateSliderValue } from '$lib/stores/debugStore';
   
   interface Props {
-    scrollPosition?: number; // 0-1 percentage
+    minValue?: number;
+    maxValue?: number;
+    currentValue?: number;
     onScroll?: (position: number) => void;
   }
   
-  let { scrollPosition = 0, onScroll }: Props = $props();
+  let { minValue = 0, maxValue = 100, currentValue = 0, onScroll }: Props = $props();
   
   let isDragging = $state(false);
   let barElement: HTMLElement;
@@ -65,6 +68,11 @@
     
     // Update position immediately during drag for responsiveness
     animatedPosition = percentage;
+    
+    // Calculate actual value from percentage and update debug store
+    const actualValue = minValue + (percentage * (maxValue - minValue));
+    updateSliderValue(actualValue);
+    
     onScroll?.(percentage);
   }
   
@@ -85,13 +93,14 @@
     }
   });
   
-  // Calculate head position based on scroll percentage
-  let headPosition = $derived(scrollPosition);
+  // Calculate scroll position as percentage (0-1) from current value
+  let scrollPosition = $derived(maxValue > minValue ? (currentValue - minValue) / (maxValue - minValue) : 0);
   
-  // Animate to new position when scrollPosition changes externally
+  // Animate to new position when currentValue changes externally
   $effect(() => {
     if (!isDragging) {
-      animateToPosition(scrollPosition);
+      const targetPosition = maxValue > minValue ? (currentValue - minValue) / (maxValue - minValue) : 0;
+      animateToPosition(targetPosition);
     }
   });
   
@@ -112,9 +121,10 @@
     style={`top: ${animatedPosition * 100}%`}
     onmousedown={handleMouseDown}
     role="slider"
+    tabindex="0"
     aria-label="Scroll position"
     aria-valuemin="0"
     aria-valuemax="100"
-    aria-valuenow={Math.round(headPosition * 100)}
+    aria-valuenow={Math.round(scrollPosition * 100)}
   ></div>
 </div>

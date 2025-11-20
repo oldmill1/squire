@@ -5,16 +5,13 @@
   import ScrollBar from '$lib/components/scrollBar/ScrollBar.svelte';
   import { initializeShortcuts } from '$lib/services/shortcuts';
   import { textStore, loadFromLocalStorage } from '$lib/stores/textStore';
+  import { debugStore } from '$lib/stores/debugStore';
   import { onMount } from 'svelte';
 
   // Load localStorage data immediately before component mounting
   loadFromLocalStorage();
 
-  let scrollPosition = $state(0);
-
-  function handleScroll(position: number) {
-    scrollPosition = position;
-  }
+  const debugInfo = $derived($debugStore);
 
   onMount(() => {
     initializeShortcuts();
@@ -24,4 +21,8 @@
 <Userinput />
 <Statusbar centerText="" rightText="" />
 <Display />
-<ScrollBar scrollPosition={scrollPosition} onScroll={handleScroll} />
+<ScrollBar 
+  minValue={0} 
+  maxValue={debugInfo.sliderMax || 100} 
+  currentValue={debugInfo.sliderValue} 
+/>
