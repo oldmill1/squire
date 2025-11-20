@@ -66,10 +66,13 @@
         }
         
         const lineElements = linesContainerRef!.querySelectorAll('span');
-        const secondToLastLine = lineElements[lineElements.length - 2];
+        const secondToLastLine = lineElements[lineElements.length - 3];
         
         if (secondToLastLine) {
           const height = secondToLastLine.getBoundingClientRect().height;
+          
+          // Debug: Add red border to second-to-last line
+          (secondToLastLine as HTMLElement).style.border = '2px solid red';
           
           if (height > 0) {
             updateLineHeightIncrement(height);
