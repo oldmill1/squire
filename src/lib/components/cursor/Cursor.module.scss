@@ -1,12 +1,12 @@
 .cursor {
   display: inline-block;
-  width: 9px;
+  width: 2px; /* Thinner like a real cursor */
   height: 20px;
   vertical-align: -4px; /* Adjust to align with text baseline */
-  margin-left: -8px; /* Negative margin to overlap text when there is text */
+  margin: 0; /* No margins in flexbox layout */
   transition: opacity 0.15s ease !important; /* Forced to override conflicting CSS */
   pointer-events: none;
-  border-radius: 2px;
+  border-radius: 1px; /* Sharper edges */
   background: linear-gradient(135deg, 
     #7dd3fc 0%,     /* Light pastel blue-green */
     #6ee7b7 25%,    /* Pastel green */
@@ -17,6 +17,7 @@
   box-shadow: none;
   position: relative;
   left: 0;
+  transform: none; /* No transform needed in flexbox */
 }
 
 .cursor.hidden {

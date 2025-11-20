@@ -205,17 +205,17 @@
             data-line={lineNum}
             data-selected={isSelected}
           >
-            <span class={styles.lineContent}>
+            <div class={styles.lineContent}>
               {#if isCurrent}
                 {@const beforeCursor = cleanLine.slice(0, cursorPosition.col)}
                 {@const afterCursor = cleanLine.slice(cursorPosition.col)}
-                {beforeCursor}
+                <div class={styles.rawText}>{beforeCursor}</div>
                 <Cursor isEmptyLine={cleanLine.length === 0} />
-                {afterCursor}
+                <div class={styles.rawText}>{afterCursor}</div>
               {:else}
-                {cleanLine}
+                <div class={styles.rawText}>{cleanLine}</div>
               {/if}
-            </span>
+            </div>
           </span>
         {/each}
       </div>
