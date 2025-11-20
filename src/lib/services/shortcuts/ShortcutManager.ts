@@ -1,22 +1,22 @@
 import { keyboardService } from '../keyboardService';
 import type { Mode, ModeHandler } from './types';
 import { setMode } from '$lib/stores/modeStore';
-import { ScriptMode } from './modes/ScriptMode';
+import { NormalMode } from './modes/NormalMode';
 import { CommandMode } from './modes/CommandMode';
 import { InsertMode } from './modes/InsertMode';
 
 export class ShortcutManager {
   private modes: Map<Mode, ModeHandler> = new Map();
-  private currentMode: Mode = 'script';
+  private currentMode: Mode = 'normal';
 
   constructor() {
     // Auto-register default modes
-    this.registerMode(new ScriptMode(this));
+    this.registerMode(new NormalMode(this));
     this.registerMode(new CommandMode(this));
     this.registerMode(new InsertMode(this));
     
-    // Don't get initial mode from store - force script mode on initialization
-    this.currentMode = 'script';
+    // Don't get initial mode from store - force normal mode on initialization
+    this.currentMode = 'normal';
   }
 
   registerMode(modeHandler: ModeHandler): void {
@@ -46,8 +46,8 @@ export class ShortcutManager {
   }
 
   initialize(): void {
-    // Start with script mode
-    this.switchToMode('script');
+    // Start with normal mode
+    this.switchToMode('normal');
   }
 
   getModeHandler(mode: Mode): ModeHandler | undefined {

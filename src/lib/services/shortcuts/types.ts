@@ -1,6 +1,6 @@
 import type { Shortcut, CharacterInputHandler, SpecialKeyHandler } from '../keyboardService';
 
-export type Mode = 'script' | 'command' | 'insert';
+export type Mode = 'normal' | 'command' | 'insert';
 
 export interface ModeHandler {
   mode: Mode;

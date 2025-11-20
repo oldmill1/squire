@@ -7,7 +7,7 @@ export function initializeShortcuts(): void {
   // Create the shortcut manager (auto-registers default modes)
   shortcutManager = new ShortcutManager();
 
-  // Initialize the system (starts in script mode)
+  // Initialize the system (starts in normal mode)
   shortcutManager.initialize();
 }
 

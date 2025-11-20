@@ -31,7 +31,7 @@ export class InsertMode implements ModeHandler {
       } else if (key === 'Delete') {
         deleteForward();
       } else if (key === 'Escape') {
-        this.manager.switchToMode('script');
+        this.manager.switchToMode('normal');
       }
     });
 

@@ -6,8 +6,8 @@ Goal: To create keyboard-driven writing editor. Squire offers a distraction-free
 
 Squire operates in three distinct modes, each optimized for different tasks:
 
-#### **Script Mode** (Default)
-The default mode when the editor starts. In script mode, you can:
+#### **Normal Mode** (Default)
+The default mode when the editor starts. In normal mode, you can:
 - Navigate and view your document
 - Use keyboard shortcuts for various commands
 - Switch to other modes using mode-specific keys
@@ -17,7 +17,7 @@ Type `i` to enter interactive mode for direct text input:
 - Type characters directly into the document
 - Press `Enter` to create new lines
 - Use `Backspace` to delete characters
-- Press `Escape` to return to script mode
+- Press `Escape` to return to normal mode
 
 When in interactive mode, the editor has typewriter mode, something you'll find only on desktop-class editors previously.
 
@@ -31,7 +31,7 @@ Press `Shift+:` (or `:` on some keyboards) to enter command mode for advanced op
   - `:3d` - Delete the 3rd line
   - `:1,5d` - Delete lines 1 through 5
   - `:%d` - Delete all lines
-- Press `Escape` to cancel and return to script mode
+- Press `Escape` to cancel and return to normal mode
 - Press `Enter` to execute the command
 
 ### Text Editing
@@ -59,15 +59,15 @@ Press `Shift+:` (or `:` on some keyboards) to enter command mode for advanced op
 ### Status Bar
 
 The status bar at the bottom displays:
-- **Left**: Current mode (Script/Interactive) or command input (`:command`)
+- **Left**: Current mode (Normal/Interactive) or command input (`:command`)
 - **Center**: Save notification timestamp (when available)
 - **Right**: Line and word count (format: `lines(words)`)
 
 ### Keyboard Shortcuts
 
-- `i` - Enter interactive mode (from script mode)
-- `Shift+:` or `:` - Enter command mode (from script mode)
-- `Escape` - Return to script mode (from interactive or command mode)
+- `i` - Enter interactive mode (from normal mode)
+- `Shift+:` or `:` - Enter command mode (from normal mode)
+- `Escape` - Return to normal mode (from interactive or command mode)
 - `+` or `=` - Increase font size
 - `-` or `_` - Decrease font size
 - `Ctrl+R` - Custom refresh action (configurable)
@@ -83,7 +83,7 @@ The status bar at the bottom displays:
 
 4. **Auto-save**: Your work is automatically saved as you type. The save notification shows when your last change was saved.
 
-5. **Mode switching**: Remember that `Escape` always returns you to script mode, where you can use shortcuts and commands.
+5. **Mode switching**: Remember that `Escape` always returns you to normal mode, where you can use shortcuts and commands.
 
 ## Technical Details
 

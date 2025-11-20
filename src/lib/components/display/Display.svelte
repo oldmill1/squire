@@ -24,7 +24,7 @@
   let typewriterOffsetValue = $state(0);
   let targetOffset = $state(0);
   let previousLineCount = $state(0);
-  let previousMode = $state('script');
+  let previousMode = $state('normal');
   let previousTextLength = $state(0);
   
   onMount(() => {
@@ -37,7 +37,7 @@
     
     // Show Squire after a brief delay to allow font loading
     setTimeout(() => {
-      if (currentLines.length === 0 && currentMode === 'script') {
+      if (currentLines.length === 0 && currentMode === 'normal') {
         showSquire = true;
       }
     }, 500);
@@ -98,8 +98,8 @@
       setTimeout(() => {
         showSquire = false;
       }, 300);
-    } else if (currentMode === 'script' && currentLines.length === 0 && !showSquire && !fading) {
-      // Show again when in script mode and text is cleared
+    } else if (currentMode === 'normal' && currentLines.length === 0 && !showSquire && !fading) {
+      // Show again when in normal mode and text is cleared
       showSquire = true;
       fading = false;
     }

@@ -44,7 +44,7 @@
   );
   
   function getModeDisplay(mode: Mode): string {
-    if (mode === 'script') return 'Script';
+    if (mode === 'normal') return 'Normal';
     if (mode === 'insert') return 'Insert';
     if (mode === 'command') return ':';
     return mode; // This line should never be reached with current Mode type

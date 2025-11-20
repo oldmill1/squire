@@ -53,7 +53,7 @@ export class CommandMode implements ModeHandler {
 
   private exitCommandMode(): void {
     clearCommand();
-    this.manager.switchToMode('script');
+    this.manager.switchToMode('normal');
     console.log('Exited command mode');
   }
 
@@ -68,6 +68,6 @@ export class CommandMode implements ModeHandler {
     }
 
     clearCommand();
-    this.manager.switchToMode('script');
+    this.manager.switchToMode('normal');
   }
 }

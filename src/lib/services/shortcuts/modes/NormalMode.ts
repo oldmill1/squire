@@ -8,8 +8,8 @@ import { currentLineStore } from '$lib/stores/currentLineStore';
 import { textStore, getLines } from '$lib/stores/textStore';
 import { setCursorLine, setCursorColumn, getCursorPosition } from '$lib/stores/cursorStore';
 
-export class ScriptMode implements ModeHandler {
-  mode: Mode = 'script';
+export class NormalMode implements ModeHandler {
+  mode: Mode = 'normal';
   private manager: ShortcutManager;
 
   constructor(manager: ShortcutManager) {
@@ -21,12 +21,12 @@ export class ScriptMode implements ModeHandler {
     keyboardService.clearCharacterInputHandler();
     keyboardService.clearSpecialKeyHandler();
 
-    // Register all script mode shortcuts
+    // Register all normal mode shortcuts
     this.registerShortcuts();
   }
 
   exit(): void {
-    // Remove all script mode shortcuts
+    // Remove all normal mode shortcuts
     this.removeShortcuts();
   }
 
@@ -53,10 +53,10 @@ export class ScriptMode implements ModeHandler {
       {
         key: 'Escape',
         action: () => {
-          // Already in script mode, but ensure we're here
-          this.manager.switchToMode('script');
+          // Already in normal mode, but ensure we're here
+          this.manager.switchToMode('normal');
         },
-        description: 'Ensure script mode'
+        description: 'Ensure normal mode'
       },
       {
         key: 'k',
