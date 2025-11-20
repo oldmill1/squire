@@ -11,6 +11,9 @@ export function initializeShortcuts(): void {
   shortcutManager.initialize();
 }
 
-export function getShortcutManager(): ShortcutManager | null {
-  return shortcutManager;
+export function getShortcutManager(): ShortcutManager {
+  if (!shortcutManager) {
+    initializeShortcuts();
+  }
+  return shortcutManager!; // Non-null assertion - we know it's initialized now
 }
