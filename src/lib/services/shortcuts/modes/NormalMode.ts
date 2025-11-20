@@ -5,12 +5,14 @@ import { FontShortcuts } from '../categories/FontShortcuts';
 import { SystemShortcuts } from '../categories/SystemShortcuts';
 import { ShortcutManager } from '../ShortcutManager';
 import { currentLineStore } from '$lib/stores/currentLineStore';
-import { textStore, getLines } from '$lib/stores/textStore';
+import { textStore, getLines, deleteCurrentLine, pasteLineAfterCurrent } from '$lib/stores/textStore';
 import { setCursorLine, setCursorColumn, getCursorPosition } from '$lib/stores/cursorStore';
 
 export class NormalMode implements ModeHandler {
   mode: Mode = 'normal';
   private manager: ShortcutManager;
+  private pendingCommand: string | null = null;
+  private commandTimeout: number | null = null;
 
   constructor(manager: ShortcutManager) {
     this.manager = manager;
@@ -26,8 +28,27 @@ export class NormalMode implements ModeHandler {
   }
 
   exit(): void {
+    // Clear any pending command
+    this.clearPendingCommand();
     // Remove all normal mode shortcuts
     this.removeShortcuts();
+  }
+
+  private clearPendingCommand(): void {
+    this.pendingCommand = null;
+    if (this.commandTimeout) {
+      clearTimeout(this.commandTimeout);
+      this.commandTimeout = null;
+    }
+  }
+
+  private setPendingCommand(command: string): void {
+    this.clearPendingCommand();
+    this.pendingCommand = command;
+    // Set timeout to clear pending command after 1 second
+    this.commandTimeout = setTimeout(() => {
+      this.clearPendingCommand();
+    }, 1000) as unknown as number;
   }
 
   getShortcuts(): Shortcut[] {
@@ -38,6 +59,7 @@ export class NormalMode implements ModeHandler {
       {
         key: 'i',
         action: () => {
+          this.clearPendingCommand();
           this.manager.switchToMode('insert');
         },
         description: 'Switch to insert mode'
@@ -46,6 +68,7 @@ export class NormalMode implements ModeHandler {
         key: ':',
         shiftKey: true,
         action: () => {
+          this.clearPendingCommand();
           this.manager.switchToMode('command');
         },
         description: 'Switch to command mode'
@@ -53,6 +76,7 @@ export class NormalMode implements ModeHandler {
       {
         key: 'Escape',
         action: () => {
+          this.clearPendingCommand();
           // Already in normal mode, but ensure we're here
           this.manager.switchToMode('normal');
         },
@@ -61,6 +85,7 @@ export class NormalMode implements ModeHandler {
       {
         key: 'k',
         action: () => {
+          this.clearPendingCommand();
           // Navigate up: decrease current line by 1, but not below 0
           currentLineStore.update(currentLine => {
             const newLine = Math.max(0, currentLine - 1);
@@ -75,6 +100,7 @@ export class NormalMode implements ModeHandler {
       {
         key: 'j',
         action: () => {
+          this.clearPendingCommand();
           // Navigate down: increase current line by 1, but not beyond available lines
           const lines = getLines();
           currentLineStore.update(currentLine => {
@@ -87,6 +113,28 @@ export class NormalMode implements ModeHandler {
           });
         },
         description: 'Move current line down'
+      },
+      {
+        key: 'd',
+        action: () => {
+          if (this.pendingCommand === 'd') {
+            // Second 'd' press - execute delete line command
+            this.clearPendingCommand();
+            deleteCurrentLine();
+          } else {
+            // First 'd' press - set pending command
+            this.setPendingCommand('d');
+          }
+        },
+        description: 'Delete current line (dd)'
+      },
+      {
+        key: 'p',
+        action: () => {
+          this.clearPendingCommand();
+          pasteLineAfterCurrent();
+        },
+        description: 'Paste line after current'
       }
     ];
   }

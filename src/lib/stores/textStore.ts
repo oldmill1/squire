@@ -2,6 +2,7 @@ import { writable } from 'svelte/store';
 import { showSaveNotification } from './saveNotificationStore';
 import { moveCursorToEndOfLine, getCursorPosition, setCursorPosition } from './cursorStore';
 import { currentLineStore } from './currentLineStore';
+import { setRegister, getRegister } from './registerStore';
 
 const STORAGE_KEY = 'squire-text';
 
@@ -205,4 +206,64 @@ export function getLines(): string[] {
   let currentLines: string[] = [];
   textStore.subscribe(value => currentLines = value)();
   return currentLines;
+}
+
+export function deleteCurrentLine() {
+  textStore.update(lines => {
+    if (lines.length === 0) return [];
+    
+    const cursor = getCursorPosition();
+    const currentLineIndex = cursor.line;
+    
+    // Store the deleted line in register (including newline)
+    const deletedLine = lines[currentLineIndex] || '';
+    setRegister(deletedLine + '\n', 'line');
+    
+    // Remove the current line
+    const newLines = [...lines];
+    newLines.splice(currentLineIndex, 1);
+    
+    // Move cursor to the "next logical line"
+    if (newLines.length === 0) {
+      // No lines left, set cursor to 0,0
+      setCursorPosition(0, 0);
+      currentLineStore.set(0);
+    } else if (currentLineIndex >= newLines.length) {
+      // Deleted last line, move to previous line
+      const newLineIndex = newLines.length - 1;
+      setCursorPosition(newLineIndex, 0);
+      currentLineStore.set(newLineIndex);
+    } else {
+      // Move to the line that took the place of the deleted line
+      setCursorPosition(currentLineIndex, 0);
+      currentLineStore.set(currentLineIndex);
+    }
+    
+    return newLines;
+  });
+  saveToLocalStorage();
+}
+
+export function pasteLineAfterCurrent() {
+  const register = getRegister();
+  if (register.type !== 'line' || !register.content) return;
+  
+  textStore.update(lines => {
+    const cursor = getCursorPosition();
+    const currentLineIndex = cursor.line;
+    
+    // Remove the trailing newline from register content
+    const contentToPaste = register.content.replace(/\n$/, '');
+    
+    // Insert the content after the current line
+    const newLines = [...lines];
+    newLines.splice(currentLineIndex + 1, 0, contentToPaste);
+    
+    // Move cursor to the pasted line
+    setCursorPosition(currentLineIndex + 1, 0);
+    currentLineStore.set(currentLineIndex + 1);
+    
+    return newLines;
+  });
+  saveToLocalStorage();
 }
