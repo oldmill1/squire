@@ -4,10 +4,18 @@
   top: 50px;
   bottom: 50px;
   width: 3px;
-  background-color: rgba(0, 0, 0, 0.2);
+  background: linear-gradient(180deg, 
+    rgba(55, 65, 81, 0.3) 0%,     /* Dark gray-blue */
+    rgba(31, 41, 55, 0.4) 50%,    /* Darker gray-blue */
+    rgba(55, 65, 81, 0.3) 100%    /* Dark gray-blue */
+  );
   border-radius: 6px;
   z-index: 1000;
   cursor: pointer;
+  box-shadow: 
+    0 0 8px rgba(31, 41, 55, 0.3),
+    0 0 16px rgba(31, 41, 55, 0.15),
+    inset 0 0 6px rgba(0, 0, 0, 0.3);
 }
 
 .head {
