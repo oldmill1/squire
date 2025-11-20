@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 import { showSaveNotification } from './saveNotificationStore';
-import { moveCursorToEndOfLine, getCursorPosition, setCursorPosition } from './cursorStore';
+import { moveCursorToEndOfLine, getCursorPosition, setCursorPosition, moveCursorToLineEnd } from './cursorStore';
 import { currentLineStore } from './currentLineStore';
 import { setRegister, getRegister } from './registerStore';
 
@@ -31,6 +31,18 @@ export function loadFromLocalStorage() {
       if (Array.isArray(lines)) {
         textStore.set(lines);
 
+        // Initialize cursor position to end of last line if there are lines
+        if (lines.length > 0) {
+          const lastLineIndex = lines.length - 1;
+          const lastLineText = lines[lastLineIndex] || '';
+          setCursorPosition(lastLineIndex, lastLineText.length);
+          currentLineStore.set(lastLineIndex);
+        } else {
+          // No lines, set cursor to 0,0
+          setCursorPosition(0, 0);
+          currentLineStore.set(0);
+        }
+
         return true;
       }
     } catch (e) {
@@ -54,12 +66,13 @@ export function appendText(char: string) {
       const currentLine = newLines[cursor.line] || '';
       
       // Insert character at cursor column
-      const beforeCursor = currentLine.slice(0, cursor.column);
-      const afterCursor = currentLine.slice(cursor.column);
+      const beforeCursor = currentLine.slice(0, cursor.col);
+      const afterCursor = currentLine.slice(cursor.col);
       newLines[cursor.line] = beforeCursor + char + afterCursor;
       
-      // Update cursor position and sync currentLineStore
-      moveCursorToEndOfLine(newLines[cursor.line]);
+      // Update cursor position - increment column by 1 and update want_col
+      const newCol = cursor.col + 1;
+      setCursorPosition(cursor.line, newCol);
       currentLineStore.set(cursor.line);
       return newLines;
     }
@@ -81,8 +94,8 @@ export function insertNewline() {
       const currentLine = newLines[cursor.line] || '';
       
       // Split the line at cursor column
-      const beforeCursor = currentLine.slice(0, cursor.column);
-      const afterCursor = currentLine.slice(cursor.column);
+      const beforeCursor = currentLine.slice(0, cursor.col);
+      const afterCursor = currentLine.slice(cursor.col);
       
       // Replace current line and add new line with the rest
       newLines[cursor.line] = beforeCursor;
@@ -132,14 +145,15 @@ export function deleteCharacter() {
     const newLines = [...lines];
     const currentLine = newLines[cursor.line] || '';
     
-    if (cursor.column > 0) {
+    if (cursor.col > 0) {
       // Delete character before cursor
-      const beforeCursor = currentLine.slice(0, cursor.column - 1);
-      const afterCursor = currentLine.slice(cursor.column);
+      const beforeCursor = currentLine.slice(0, cursor.col - 1);
+      const afterCursor = currentLine.slice(cursor.col);
       newLines[cursor.line] = beforeCursor + afterCursor;
       
       // Move cursor back one position and sync currentLineStore
-      setCursorPosition(cursor.line, cursor.column - 1);
+      const newCol = cursor.col - 1;
+      setCursorPosition(cursor.line, newCol);
       currentLineStore.set(cursor.line);
     } else if (cursor.line > 0) {
       // At beginning of line, merge with previous line
@@ -149,7 +163,8 @@ export function deleteCharacter() {
       
       // Move cursor to end of previous line and sync currentLineStore
       const newCursorLine = cursor.line - 1;
-      setCursorPosition(newCursorLine, previousLine.length);
+      const newCol = previousLine.length;
+      setCursorPosition(newCursorLine, newCol);
       currentLineStore.set(newCursorLine);
     }
     

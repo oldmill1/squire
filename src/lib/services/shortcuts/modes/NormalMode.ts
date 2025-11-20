@@ -6,7 +6,7 @@ import { SystemShortcuts } from '../categories/SystemShortcuts';
 import { ShortcutManager } from '../ShortcutManager';
 import { currentLineStore } from '$lib/stores/currentLineStore';
 import { textStore, getLines, deleteCurrentLine, pasteLineAfterCurrent } from '$lib/stores/textStore';
-import { setCursorLine, setCursorColumn, getCursorPosition } from '$lib/stores/cursorStore';
+import { setCursorLine, setCursorColumn, getCursorPosition, setCursorWantCol, moveCursorToLineEnd, setCursorPosition } from '$lib/stores/cursorStore';
 
 export class NormalMode implements ModeHandler {
   mode: Mode = 'normal';
@@ -87,11 +87,16 @@ export class NormalMode implements ModeHandler {
         action: () => {
           this.clearPendingCommand();
           // Navigate up: decrease current line by 1, but not below 0
+          const lines = getLines();
           currentLineStore.update(currentLine => {
             const newLine = Math.max(0, currentLine - 1);
-            // Also update cursor position
+            // Update cursor line and preserve want_col
             setCursorLine(newLine);
-            setCursorColumn(0); // Start of line
+            
+            // Move cursor to appropriate column based on line length
+            const targetLine = lines[newLine] || '';
+            moveCursorToLineEnd(targetLine, true); // preserve want_col
+            
             return newLine;
           });
         },
@@ -106,13 +111,49 @@ export class NormalMode implements ModeHandler {
           currentLineStore.update(currentLine => {
             const maxLine = Math.max(0, lines.length - 1);
             const newLine = Math.min(maxLine, currentLine + 1);
-            // Also update cursor position
+            // Update cursor line and preserve want_col
             setCursorLine(newLine);
-            setCursorColumn(0); // Start of line
+            
+            // Move cursor to appropriate column based on line length
+            const targetLine = lines[newLine] || '';
+            moveCursorToLineEnd(targetLine, true); // preserve want_col
+            
             return newLine;
           });
         },
         description: 'Move current line down'
+      },
+      {
+        key: 'h',
+        action: () => {
+          this.clearPendingCommand();
+          // Move cursor left
+          const cursor = getCursorPosition();
+          const lines = getLines();
+          const currentLine = lines[cursor.line] || '';
+          
+          // Calculate new column position, don't go below 0
+          const newCol = Math.max(0, cursor.col - 1);
+          setCursorPosition(cursor.line, newCol);
+          currentLineStore.set(cursor.line);
+        },
+        description: 'Move cursor left'
+      },
+      {
+        key: 'l',
+        action: () => {
+          this.clearPendingCommand();
+          // Move cursor right
+          const cursor = getCursorPosition();
+          const lines = getLines();
+          const currentLine = lines[cursor.line] || '';
+          
+          // Calculate new column position, don't go beyond line length
+          const newCol = Math.min(currentLine.length, cursor.col + 1);
+          setCursorPosition(cursor.line, newCol);
+          currentLineStore.set(cursor.line);
+        },
+        description: 'Move cursor right'
       },
       {
         key: 'd',

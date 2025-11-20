@@ -8,6 +8,7 @@
   import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
   import { textStore } from '$lib/stores/textStore';
   import { loadTransformFromLocalStorage, resetTransform, updateTransform } from '$lib/stores/transformStore';
+  import { cursorStore, getCursorPosition } from '$lib/stores/cursorStore';
   import { onMount } from 'svelte';
   import Cursor from '../cursor/Cursor.svelte';
   import styles from './Display.module.scss';
@@ -18,6 +19,7 @@
   const currentLine = $derived($currentLineStore);
   const selectedLines = $derived($selectedLinesStore);
   const debugInfo = $derived($debugStore);
+  const cursorPosition = $derived($cursorStore);
   const showLineNumbers = $derived($lineNumberVisibilityStore);
   let showSquire = $state(false);
   let fading = $state(false);
@@ -204,9 +206,14 @@
             data-selected={isSelected}
           >
             <span class={styles.lineContent}>
-              {cleanLine}
               {#if isCurrent}
+                {@const beforeCursor = cleanLine.slice(0, cursorPosition.col)}
+                {@const afterCursor = cleanLine.slice(cursorPosition.col)}
+                {beforeCursor}
                 <Cursor isEmptyLine={cleanLine.length === 0} />
+                {afterCursor}
+              {:else}
+                {cleanLine}
               {/if}
             </span>
           </span>

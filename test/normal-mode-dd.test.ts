@@ -14,7 +14,7 @@ describe('NormalMode - dd command', () => {
   beforeEach(() => {
     // Reset all stores before each test
     textStore.set(['line 1', 'line 2', 'line 3']);
-    cursorStore.set({ line: 0, column: 0 });
+    cursorStore.set({ line: 0, col: 0, want_col: 0 });
     currentLineStore.set(0);
     
     // Create new instances for each test
@@ -24,7 +24,7 @@ describe('NormalMode - dd command', () => {
 
   it('should delete current line when dd is pressed', () => {
     // Start at line 0
-    cursorStore.set({ line: 0, column: 0 });
+    cursorStore.set({ line: 0, col: 0, want_col: 0 });
     currentLineStore.set(0);
     
     // Get the shortcuts
@@ -46,7 +46,7 @@ describe('NormalMode - dd command', () => {
     // Check that cursor moved to the "next logical line" (which is now line 0)
     const cursor = getCursorPosition();
     expect(cursor.line).toBe(0);
-    expect(cursor.column).toBe(0);
+    expect(cursor.col).toBe(0);
     
     // Check that currentLineStore is updated
     expect(get(currentLineStore)).toBe(0);
@@ -54,7 +54,7 @@ describe('NormalMode - dd command', () => {
 
   it('should delete middle line and move cursor to same line index', () => {
     // Start at line 1
-    cursorStore.set({ line: 1, column: 5 });
+    cursorStore.set({ line: 1, col: 5, want_col: 5 });
     currentLineStore.set(1);
     
     const shortcuts = normalMode.getShortcuts();
@@ -71,12 +71,12 @@ describe('NormalMode - dd command', () => {
     // Cursor should be at line 1 (where line 2 used to be)
     const cursor = getCursorPosition();
     expect(cursor.line).toBe(1);
-    expect(cursor.column).toBe(0);
+    expect(cursor.col).toBe(0);
   });
 
   it('should delete last line and move cursor to previous line', () => {
     // Start at last line (line 2)
-    cursorStore.set({ line: 2, column: 3 });
+    cursorStore.set({ line: 2, col: 3, want_col: 3 });
     currentLineStore.set(2);
     
     const shortcuts = normalMode.getShortcuts();
@@ -93,13 +93,13 @@ describe('NormalMode - dd command', () => {
     // Cursor should move to previous line (now line 1)
     const cursor = getCursorPosition();
     expect(cursor.line).toBe(1);
-    expect(cursor.column).toBe(0);
+    expect(cursor.col).toBe(0);
   });
 
   it('should handle deleting the only line', () => {
     // Start with only one line
     textStore.set(['only line']);
-    cursorStore.set({ line: 0, column: 2 });
+    cursorStore.set({ line: 0, col: 2, want_col: 2 });
     currentLineStore.set(0);
     
     const shortcuts = normalMode.getShortcuts();
@@ -116,12 +116,12 @@ describe('NormalMode - dd command', () => {
     // Cursor should be at 0,0
     const cursor = getCursorPosition();
     expect(cursor.line).toBe(0);
-    expect(cursor.column).toBe(0);
+    expect(cursor.col).toBe(0);
   });
 
   it('should store deleted line in register', () => {
     // Start at line 1
-    cursorStore.set({ line: 1, column: 0 });
+    cursorStore.set({ line: 1, col: 0, want_col: 0 });
     currentLineStore.set(1);
     
     const shortcuts = normalMode.getShortcuts();
@@ -172,7 +172,7 @@ describe('NormalMode - dd command', () => {
 
   it('should paste line after current with p command', () => {
     // First delete a line to store it in register
-    cursorStore.set({ line: 1, column: 0 });
+    cursorStore.set({ line: 1, col: 0, want_col: 0 });
     currentLineStore.set(1);
     
     const shortcuts = normalMode.getShortcuts();
@@ -184,7 +184,7 @@ describe('NormalMode - dd command', () => {
     ddShortcut!.action();
     
     // Move to line 0
-    cursorStore.set({ line: 0, column: 0 });
+    cursorStore.set({ line: 0, col: 0, want_col: 0 });
     currentLineStore.set(0);
     
     // Paste after current line
@@ -197,6 +197,6 @@ describe('NormalMode - dd command', () => {
     // Cursor should be on the pasted line
     const cursor = getCursorPosition();
     expect(cursor.line).toBe(1);
-    expect(cursor.column).toBe(0);
+    expect(cursor.col).toBe(0);
   });
 });
