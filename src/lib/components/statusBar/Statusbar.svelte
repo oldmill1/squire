@@ -4,6 +4,7 @@
   import { textStore } from '$lib/stores/textStore';
   import { saveNotificationStore } from '$lib/stores/saveNotificationStore';
   import { commandStore } from '$lib/stores/commandStore';
+  import { cursorStore } from '$lib/stores/cursorStore';
   
   interface Props {
     centerText?: string;
@@ -16,6 +17,7 @@
   const currentLines = $derived($textStore);
   const saveNotification = $derived($saveNotificationStore);
   const currentCommand = $derived($commandStore);
+  const cursorPosition = $derived($cursorStore);
   const lineCount = $derived(currentLines.length);
   
   // Calculate total word count across all lines
@@ -29,12 +31,26 @@
     }, 0)
   );
   
-  // Format display text for line and word count
+  // Format display text for cursor position, line and word count
   const displayCounts = $derived(
-    lineCount === 0 && wordCount === 0 ? '' :
-    lineCount > 0 && wordCount > 0 ? `${lineCount}(${wordCount})` :
-    lineCount > 0 ? `${lineCount}` :
-    `${wordCount}`
+    (() => {
+      const cursorPos = `${cursorPosition.col + 1},${cursorPosition.line + 1}`; // 1-based for display
+      
+      if (lineCount === 0 && wordCount === 0) {
+        return cursorPos;
+      }
+      
+      let countsText = '';
+      if (lineCount > 0 && wordCount > 0) {
+        countsText = `${lineCount}(${wordCount})`;
+      } else if (lineCount > 0) {
+        countsText = `${lineCount}`;
+      } else {
+        countsText = `${wordCount}`;
+      }
+      
+      return `${cursorPos} ${countsText}`;
+    })()
   );
   
   // Center text shows save notification or default center text
@@ -49,6 +65,7 @@
     if (mode === 'normal') return '';
     if (mode === 'insert') return 'Insert';
     if (mode === 'command') return ':';
+    if (mode === 'visual_char') return 'Visual';
     return mode; // This line should never be reached with current Mode type
   }
 </script>

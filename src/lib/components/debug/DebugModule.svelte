@@ -4,11 +4,13 @@
 	import { modeStore } from '$lib/stores/modeStore';
 	import { currentLineStore } from '$lib/stores/currentLineStore';
 	import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
+	import { cursorStore } from '$lib/stores/cursorStore';
 
 	const debugInfo = $derived($debugStore);
 	const currentMode = $derived($modeStore);
 	const currentLine = $derived($currentLineStore);
 	const selectedLines = $derived($selectedLinesStore);
+	const cursorPosition = $derived($cursorStore);
 
 	function handleSliderChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -18,6 +20,8 @@
 
 <div class={`${styles.debugModule} ${currentMode === 'insert' ? styles.borderInteractive : styles.borderScript}`}>
 	<div class={styles.content}>
+		<div class={styles.info}>cursor: ({cursorPosition.col}, {cursorPosition.line})</div>
+		<div class={styles.info}>want_col: {cursorPosition.want_col}</div>
 		<div class={styles.info}>y: {debugInfo.transformValue.toFixed(2)}px</div>
 		<div class={styles.info}>inc: {debugInfo.lastLineHeightIncrement.toFixed(2)}px</div>
 		<div class={styles.info}>h: {debugInfo.lineContainerHeight.toFixed(2)}px</div>
