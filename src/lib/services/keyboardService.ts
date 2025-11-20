@@ -46,6 +46,10 @@ class KeyboardService {
       event.stopPropagation();
       shortcut.action();
     } else if (specialKeyHandler && this.isSpecialKey(event)) {
+      // Debug Escape key handling
+      if (event.key === 'Escape') {
+        console.log('KeyboardService: handling Escape key - specialKeyHandler exists:', !!specialKeyHandler);
+      }
       event.preventDefault();
       event.stopPropagation();
       specialKeyHandler(event.key);
@@ -72,8 +76,8 @@ class KeyboardService {
   }
 
   private isSpecialKey(event: KeyboardEvent): boolean {
-    // Check if the key is a special editing key (Enter, Delete, Backspace)
-    const specialKeys = ['Enter', 'Delete', 'Backspace'];
+    // Check if the key is a special editing key (Enter, Delete, Backspace, Escape)
+    const specialKeys = ['Enter', 'Delete', 'Backspace', 'Escape'];
     return specialKeys.includes(event.key) && !event.ctrlKey && !event.altKey && !event.metaKey;
   }
 
