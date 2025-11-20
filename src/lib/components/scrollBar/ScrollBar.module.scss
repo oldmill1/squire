@@ -1,0 +1,32 @@
+.scrollbar {
+  position: fixed;
+  right: 20px;
+  top: 50px;
+  bottom: 50px;
+  width: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  z-index: 1000;
+  cursor: pointer;
+}
+
+.head {
+  position: absolute;
+  width: 20px;
+  height: 20px;
+  background-color: #3b82f6;
+  border-radius: 50%;
+  left: 50%;
+  transform: translateX(-50%) translateY(-50%);
+  cursor: grab;
+  transition: background-color 0.2s ease;
+  
+  &:hover {
+    background-color: #2563eb;
+  }
+  
+  &:active {
+    cursor: grabbing;
+    background-color: #1d4ed8;
+  }
+}
