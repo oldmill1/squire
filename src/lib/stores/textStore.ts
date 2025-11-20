@@ -69,6 +69,23 @@ export function insertNewline() {
   saveToLocalStorage();
 }
 
+export function modifyLastLine(line: string) {
+  textStore.update(lines => {
+    if (lines.length === 0) {
+      // No lines exist, create the first line
+      moveCursorToEndOfLine(line);
+      return [line];
+    } else {
+      // Modify the last line
+      const newLines = [...lines];
+      newLines[newLines.length - 1] = line;
+      moveCursorToEndOfLine(line);
+      return newLines;
+    }
+  });
+  saveToLocalStorage();
+}
+
 export function appendLine(line: string) {
   textStore.update(lines => {
     const newLines = [...lines, line];

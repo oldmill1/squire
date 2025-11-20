@@ -1,7 +1,7 @@
 import { keyboardService } from './keyboardService';
 import { increaseFontSize, decreaseFontSize, resetFontSize } from '$lib/stores/fontSizeStore';
 import { setMode, modeStore, getMode } from '$lib/stores/modeStore';
-import { appendText, insertNewline, deleteCharacter, deleteForward, getLines, appendLine } from '$lib/stores/textStore';
+import { appendText, insertNewline, deleteCharacter, deleteForward, getLines, appendLine, modifyLastLine } from '$lib/stores/textStore';
 import { appendToCommand, removeFromCommand, clearCommand, getCommand } from '$lib/stores/commandStore';
 import { setSelectedLines, addSelectedLine, getSelectedLines, clearSelectedLines } from '$lib/stores/selectedLinesStore';
 import { deleteLine, deleteAllLines, deleteLinesRange } from '$lib/stores/textStore';
@@ -120,11 +120,11 @@ export function initializeShortcuts() {
               // First, handle special :s1 / :s2 / :s3 commands
               const commandStrFull = commandChars.join('');
               if (commandStrFull === 's1') {
-                appendLine('Velvet horizon lantern orchard, quantum lattice marigold syntax.');
+                modifyLastLine('Velvet horizon lantern orchard, quantum lattice marigold syntax.');
               } else if (commandStrFull === 's2') {
-                appendLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind.');
+                modifyLastLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind.');
               } else if (commandStrFull === 's3') {
-                appendLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind. Indigo cactus paragraph engines tumble sideways over whispering marble alphabets.');
+                modifyLastLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind. Indigo cactus paragraph engines tumble sideways over whispering marble alphabets.');
               } else {
                 // Process command for line selection
                 // Clear selection before processing any selection command
