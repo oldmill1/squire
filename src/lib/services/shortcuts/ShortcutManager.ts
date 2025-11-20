@@ -1,12 +1,20 @@
 import { keyboardService } from '../keyboardService';
 import type { Mode, ModeHandler } from './types';
-import { setMode, getMode } from '$lib/stores/modeStore';
+import { setMode } from '$lib/stores/modeStore';
+import { ScriptMode } from './modes/ScriptMode';
+import { CommandMode } from './modes/CommandMode';
+import { InteractiveMode } from './modes/InteractiveMode';
 
 export class ShortcutManager {
   private modes: Map<Mode, ModeHandler> = new Map();
   private currentMode: Mode = 'script';
 
   constructor() {
+    // Auto-register default modes
+    this.registerMode(new ScriptMode(this));
+    this.registerMode(new CommandMode(this));
+    this.registerMode(new InteractiveMode(this));
+    
     // Don't get initial mode from store - force script mode on initialization
     this.currentMode = 'script';
   }

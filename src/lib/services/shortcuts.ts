@@ -1,25 +1,11 @@
-import { 
-  ShortcutManager, 
-  ScriptMode, 
-  CommandMode, 
-  InteractiveMode 
-} from './shortcuts/index';
+import { ShortcutManager } from './shortcuts/index';
 
 // Global shortcut manager instance
 let shortcutManager: ShortcutManager | null = null;
 
 export function initializeShortcuts(): void {
-  // Create the shortcut manager
+  // Create the shortcut manager (auto-registers default modes)
   shortcutManager = new ShortcutManager();
-
-  // Register all modes
-  const scriptMode = new ScriptMode(shortcutManager);
-  const commandMode = new CommandMode(shortcutManager);
-  const interactiveMode = new InteractiveMode(shortcutManager);
-  
-  shortcutManager.registerMode(scriptMode);
-  shortcutManager.registerMode(commandMode);
-  shortcutManager.registerMode(interactiveMode);
 
   // Initialize the system (starts in script mode)
   shortcutManager.initialize();
