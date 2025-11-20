@@ -13,6 +13,7 @@ import {
 } from '$lib/stores/selectedLinesStore';
 import { showLineNumbers, hideLineNumbers } from '$lib/stores/lineNumberStore';
 import { showDebugModule, hideDebugModule } from '$lib/stores/debugVisibilityStore';
+import { settingsService } from '$lib/services/settingsService';
 
 // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
 function getOrdinal(n: number): string {
@@ -34,9 +35,17 @@ export class CommandParser {
       
       if (setting === 'number') {
         showLineNumbers();
+        // Save setting to PouchDB
+        settingsService.setSetting('lineNumbers', true).catch(error => {
+          console.error('Failed to save lineNumbers setting:', error);
+        });
         return { success: true, message: 'Line numbers enabled' };
       } else if (setting === 'nonumber') {
         hideLineNumbers();
+        // Save setting to PouchDB
+        settingsService.setSetting('lineNumbers', false).catch(error => {
+          console.error('Failed to save lineNumbers setting:', error);
+        });
         return { success: true, message: 'Line numbers disabled' };
       } else {
         return { success: false, message: `Unknown setting: ${setting}` };
