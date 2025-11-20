@@ -86,7 +86,8 @@
 
 .rawText {
   display: inline;
-  white-space: pre;
+  white-space: pre-wrap;
+  word-wrap: break-word;
 }
 
 .line:empty::before {
