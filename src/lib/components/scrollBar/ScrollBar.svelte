@@ -107,12 +107,12 @@
       const timeSpan = recentScrolls[recentScrolls.length - 1].time - recentScrolls[0].time;
       
       if (timeSpan > 0) {
-        scrollVelocity = (totalDelta / timeSpan) * 10; // Scale for responsiveness
+        scrollVelocity = (totalDelta / timeSpan) * 3; // Reduced from 10 to 3 for less sensitivity
       }
     }
     
-    // Apply immediate scroll based on wheel delta
-    const scrollDelta = (delta / 1000) * -1; // Invert and scale
+    // Apply immediate scroll based on wheel delta (reduced sensitivity)
+    const scrollDelta = (delta / 3000) * -1; // Changed from 1000 to 3000 for less sensitivity
     const newPosition = Math.max(0, Math.min(1, animatedPosition + scrollDelta));
     
     animatedPosition = newPosition;
@@ -134,16 +134,16 @@
     }
     
     let velocity = scrollVelocity;
-    const friction = 0.95; // Damping factor
-    const minVelocity = 0.01;
+    const friction = 0.92; // Increased friction for faster deceleration (was 0.95)
+    const minVelocity = 0.005; // Lower threshold for stopping earlier (was 0.01)
     
     function momentumStep() {
       if (Math.abs(velocity) < minVelocity) {
         return;
       }
       
-      // Apply velocity to position
-      const delta = velocity * 0.01;
+      // Apply velocity to position (reduced sensitivity)
+      const delta = velocity * 0.005; // Reduced from 0.01 for less sensitivity
       const newPosition = Math.max(0, Math.min(1, animatedPosition + delta));
       
       animatedPosition = newPosition;
