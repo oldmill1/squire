@@ -21,6 +21,8 @@
   // Calculate total word count across all lines
   const wordCount = $derived(
     currentLines.length === 0 ? 0 : currentLines.reduce((total, line) => {
+      // Skip null/undefined lines
+      if (!line || typeof line !== 'string') return total;
       // Split by whitespace and filter out empty strings
       const words = line.trim().split(/\s+/).filter(word => word.length > 0);
       return total + words.length;
