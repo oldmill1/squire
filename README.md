@@ -31,6 +31,9 @@ Press `Shift+:` (or `:` on some keyboards) to enter command mode for advanced op
   - `:3d` - Delete the 3rd line
   - `:1,5d` - Delete lines 1 through 5
   - `:%d` - Delete all lines
+- **Debug Module Control**: Show or hide the debug module
+  - `:dopen` or `dopen` - Show the debug module
+  - `:dclose` or `dclose` - Hide the debug module
 - Press `Escape` to cancel and return to normal mode
 - Press `Enter` to execute the command
 

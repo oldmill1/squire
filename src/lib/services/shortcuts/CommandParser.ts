@@ -12,6 +12,7 @@ import {
   getSelectedLines
 } from '$lib/stores/selectedLinesStore';
 import { showLineNumbers, hideLineNumbers } from '$lib/stores/lineNumberStore';
+import { showDebugModule, hideDebugModule } from '$lib/stores/debugVisibilityStore';
 
 // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
 function getOrdinal(n: number): string {
@@ -40,6 +41,21 @@ export class CommandParser {
       } else {
         return { success: false, message: `Unknown setting: ${setting}` };
       }
+    }
+
+    // Handle debug module commands
+    if (commandStrFull === ':dopen') {
+      showDebugModule();
+      return { success: true, message: 'Debug module opened' };
+    } else if (commandStrFull === 'dopen') {
+      showDebugModule();
+      return { success: true, message: 'Debug module opened' };
+    } else if (commandStrFull === ':dclose') {
+      hideDebugModule();
+      return { success: true, message: 'Debug module closed' };
+    } else if (commandStrFull === 'dclose') {
+      hideDebugModule();
+      return { success: true, message: 'Debug module closed' };
     }
 
     
