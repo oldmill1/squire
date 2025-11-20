@@ -73,6 +73,10 @@
   user-select: none;
   padding-right: 0.5rem;
   flex-shrink: 0;
+  min-height: 1.7em; /* Match line min-height */
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 }
 
 .lineContent {
