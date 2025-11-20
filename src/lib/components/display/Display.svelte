@@ -1,7 +1,7 @@
 <script lang="ts">
   import { animationService } from '$lib/services/animationService';
   import { currentLineStore } from '$lib/stores/currentLineStore';
-  import { debugStore, resetDebugStore, updateLineContainerHeight, updateLineCount, updateTransformValue } from '$lib/stores/debugStore';
+  import { debugStore, resetDebugStore, updateLineContainerHeight, updateLineCount, updateTransformValue, updateLineHeightIncrement } from '$lib/stores/debugStore';
   import { fontSizeStore } from '$lib/stores/fontSizeStore';
   import { modeStore } from '$lib/stores/modeStore';
   import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
@@ -72,6 +72,7 @@
           const height = secondToLastLine.getBoundingClientRect().height;
           
           if (height > 0) {
+            updateLineHeightIncrement(height);
             targetOffset += height;
             animateToTarget();
           }
