@@ -30,12 +30,6 @@ export function loadFromLocalStorage() {
       if (Array.isArray(lines)) {
         textStore.set(lines);
 
-        // Position cursor and current line at the end of the document
-        const lastLineIndex = Math.max(0, lines.length - 1);
-        const lastLineText = lines[lastLineIndex] ?? '';
-        setCursorPosition(lastLineIndex, lastLineText.length);
-        currentLineStore.set(lastLineIndex);
-
         return true;
       }
     } catch (e) {
