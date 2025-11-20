@@ -24,18 +24,7 @@ export class CommandParser {
     const commandChars = command.split('');
     const commandStrFull = commandChars.join('');
 
-    // Handle special :s1 / :s2 / :s3 commands
-    if (commandStrFull === 's1') {
-      modifyLastLine('Velvet horizon lantern orchard, quantum lattice marigold syntax.');
-      return { success: true, message: 'Applied s1 template' };
-    } else if (commandStrFull === 's2') {
-      modifyLastLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind.');
-      return { success: true, message: 'Applied s2 template' };
-    } else if (commandStrFull === 's3') {
-      modifyLastLine('Velvet horizon lantern orchard, quantum lattice marigold syntax. Clockwork meadow syntax river rotates silently, biscuit nebula grammar flickers behind. Indigo cactus paragraph engines tumble sideways over whispering marble alphabets.');
-      return { success: true, message: 'Applied s3 template' };
-    }
-
+    
     // Process command for line selection
     // Clear selection before processing any selection command
     clearSelectedLines();
