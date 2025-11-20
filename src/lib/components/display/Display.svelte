@@ -66,31 +66,21 @@
         }
         
         const lineElements = linesContainerRef!.querySelectorAll('span');
-        
-        // Debug: Log all line elements and their info
-        console.log('=== All line elements ===');
-        for (let i = 0; i < lineElements.length; i++) {
-          const element = lineElements[i];
-          const height = element.getBoundingClientRect().height;
-          const text = element.textContent;
-          console.log(`Index ${i}: height=${height}px, text="${text}"`);
-        }
-        
         const secondToLastLine = lineElements[lineElements.length - 4];
         
         if (secondToLastLine) {
           const height = secondToLastLine.getBoundingClientRect().height;
           
-          // Debug: Log the height being measured
-          console.log('=== SELECTED LINE ===');
-          console.log('Debug - Measured height:', height, 'for line:', secondToLastLine.textContent);
+          // Add artificial value to height calculation
+          const artificialOffset = 1; // You can adjust this value
+          const adjustedHeight = height + artificialOffset;
           
           // Debug: Add red border to second-to-last line
           (secondToLastLine as HTMLElement).style.border = '2px solid red';
           
           if (height > 0) {
-            updateLineHeightIncrement(height);
-            targetOffset += height;
+            updateLineHeightIncrement(adjustedHeight);
+            targetOffset += adjustedHeight;
             animateToTarget();
           }
         }
