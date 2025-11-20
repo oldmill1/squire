@@ -24,6 +24,8 @@
   let typewriterOffsetValue = $state(0);
   let targetOffset = $state(0);
   let previousLineCount = $state(0);
+  let previousMode = $state('script');
+  let previousTextLength = $state(0);
   
   onMount(() => {
     // Load saved transform from localStorage first
@@ -104,8 +106,10 @@
   });
 
   $effect(() => {
-    // Update current line to be the last line (or 0 if no lines)
-    currentLineStore.set(currentLines.length > 0 ? currentLines.length - 1 : 0);
+    // This effect has been removed since currentLineStore is now properly managed
+    // by the textStore functions (appendText, insertNewline, deleteCharacter)
+    // to maintain cursor position synchronization
+    previousTextLength = currentLines.length;
   });
 
   $effect(() => {

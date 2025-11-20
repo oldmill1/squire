@@ -4,6 +4,9 @@ import { keyboardService } from '../../keyboardService';
 import { FontShortcuts } from '../categories/FontShortcuts';
 import { SystemShortcuts } from '../categories/SystemShortcuts';
 import { ShortcutManager } from '../ShortcutManager';
+import { currentLineStore } from '$lib/stores/currentLineStore';
+import { textStore, getLines } from '$lib/stores/textStore';
+import { setCursorLine, setCursorColumn, getCursorPosition } from '$lib/stores/cursorStore';
 
 export class ScriptMode implements ModeHandler {
   mode: Mode = 'script';
@@ -54,6 +57,36 @@ export class ScriptMode implements ModeHandler {
           this.manager.switchToMode('script');
         },
         description: 'Ensure script mode'
+      },
+      {
+        key: 'k',
+        action: () => {
+          // Navigate up: decrease current line by 1, but not below 0
+          currentLineStore.update(currentLine => {
+            const newLine = Math.max(0, currentLine - 1);
+            // Also update cursor position
+            setCursorLine(newLine);
+            setCursorColumn(0); // Start of line
+            return newLine;
+          });
+        },
+        description: 'Move current line up'
+      },
+      {
+        key: 'j',
+        action: () => {
+          // Navigate down: increase current line by 1, but not beyond available lines
+          const lines = getLines();
+          currentLineStore.update(currentLine => {
+            const maxLine = Math.max(0, lines.length - 1);
+            const newLine = Math.min(maxLine, currentLine + 1);
+            // Also update cursor position
+            setCursorLine(newLine);
+            setCursorColumn(0); // Start of line
+            return newLine;
+          });
+        },
+        description: 'Move current line down'
       }
     ];
   }

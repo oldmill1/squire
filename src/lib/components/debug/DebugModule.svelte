@@ -2,9 +2,13 @@
 	import styles from './DebugModule.module.scss';
 	import { debugStore, updateSliderValue } from '$lib/stores/debugStore';
 	import { modeStore } from '$lib/stores/modeStore';
+	import { currentLineStore } from '$lib/stores/currentLineStore';
+	import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
 
 	const debugInfo = $derived($debugStore);
 	const currentMode = $derived($modeStore);
+	const currentLine = $derived($currentLineStore);
+	const selectedLines = $derived($selectedLinesStore);
 
 	function handleSliderChange(event: Event) {
 		const target = event.target as HTMLInputElement;
@@ -17,6 +21,8 @@
 		<div class={styles.info}>y: {debugInfo.transformValue.toFixed(2)}px</div>
 		<div class={styles.info}>inc: {debugInfo.lastLineHeightIncrement.toFixed(2)}px</div>
 		<div class={styles.info}>h: {debugInfo.lineContainerHeight.toFixed(2)}px</div>
+		<div class={styles.info}>line: {currentLine + 1}</div>
+		<div class={styles.info}>selected: [{selectedLines.map(l => l + 1).join(', ')}]</div>
 		<div class={styles.sliderContainer}>
 			<label class={styles.sliderLabel} for="dummy-slider">transform</label>
 			<input 
