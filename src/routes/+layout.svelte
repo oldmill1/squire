@@ -32,8 +32,8 @@
 			// Wait for PouchDB to be available
 			await waitForPouchDBGlobal();
 			
-			// Load lineNumbers setting
-			const lineNumbers = await settingsService.getSetting('lineNumbers', true);
+			// Load lineNumbers setting (default to false - hidden)
+			const lineNumbers = await settingsService.getSetting('lineNumbers', false);
 			console.log('📋 Loaded lineNumbers setting:', lineNumbers);
 			
 			// Apply the setting to the line number store
@@ -41,8 +41,8 @@
 			
 		} catch (error) {
 			console.error('❌ Failed to load settings:', error);
-			// Use default value if loading fails
-			lineNumberVisibilityStore.set(true);
+			// Use default value if loading fails (hidden)
+			lineNumberVisibilityStore.set(false);
 		}
 	});
 </script>

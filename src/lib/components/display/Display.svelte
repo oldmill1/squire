@@ -11,6 +11,7 @@
   import { cursorStore, getCursorPosition } from '$lib/stores/cursorStore';
   import { visualStore, getNormalizedSelection } from '$lib/stores/visualStore';
   import { onMount } from 'svelte';
+  import { fade } from 'svelte/transition';
   import Cursor from '../cursor/Cursor.svelte';
   import styles from './Display.module.scss';
   
@@ -277,10 +278,17 @@
           {@const cleanLine = line}
           {@const hasSelection = visualState.active && visualState.type === 'char' && getSelectionForLine(index) !== null}
           <span 
-            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''} ${!showLineNumbers ? styles.hideLineNumbers : ''} ${hasSelection ? styles.hasVisualSelection : ''}`} 
+            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''} ${hasSelection ? styles.hasVisualSelection : ''}`} 
             data-line={lineNum}
             data-selected={isSelected}
           >
+            <div class={styles.lineNumber}>
+              {#if showLineNumbers}
+                <div transition:fade={{ duration: 300 }}>
+                  {lineNum}
+                </div>
+              {/if}
+            </div>
             <div class={styles.lineContent}>
               {#if isCurrent && !hasSelection}
                 {@const beforeCursor = cleanLine.slice(0, cursorPosition.col)}
