@@ -17,6 +17,12 @@
   let dragOffset = $state(0);
   let animatedPosition = $state(0);
   
+  // Scroll velocity tracking
+  let scrollVelocity = $state(0);
+  let lastScrollTime = $state(0);
+  let scrollHistory: Array<{ time: number; delta: number }> = [];
+  let velocityAnimationFrame: number;
+  
   // Smooth animation using requestAnimationFrame
   let animationFrame: number;
   
@@ -81,6 +87,83 @@
     dragOffset = 0;
   }
   
+  // Track scroll velocity from wheel/touch events
+  function handleWheelScroll(event: WheelEvent) {
+    event.preventDefault(); // Prevent native scroll
+    
+    const currentTime = performance.now();
+    const delta = event.deltaY;
+    
+    // Track scroll history for velocity calculation
+    scrollHistory.push({ time: currentTime, delta });
+    
+    // Keep only recent history (last 100ms)
+    scrollHistory = scrollHistory.filter(item => currentTime - item.time < 100);
+    
+    // Calculate velocity based on recent scroll history
+    if (scrollHistory.length > 1) {
+      const recentScrolls = scrollHistory.slice(-5); // Last 5 events
+      const totalDelta = recentScrolls.reduce((sum, item) => sum + item.delta, 0);
+      const timeSpan = recentScrolls[recentScrolls.length - 1].time - recentScrolls[0].time;
+      
+      if (timeSpan > 0) {
+        scrollVelocity = (totalDelta / timeSpan) * 10; // Scale for responsiveness
+      }
+    }
+    
+    // Apply immediate scroll based on wheel delta
+    const scrollDelta = (delta / 1000) * -1; // Invert and scale
+    const newPosition = Math.max(0, Math.min(1, animatedPosition + scrollDelta));
+    
+    animatedPosition = newPosition;
+    
+    // Calculate actual value and update
+    const actualValue = minValue + (newPosition * (maxValue - minValue));
+    updateSliderValue(actualValue);
+    
+    onScroll?.(newPosition);
+    
+    // Apply momentum scrolling
+    applyMomentumScroll();
+  }
+  
+  // Apply momentum based on calculated velocity
+  function applyMomentumScroll() {
+    if (velocityAnimationFrame) {
+      cancelAnimationFrame(velocityAnimationFrame);
+    }
+    
+    let velocity = scrollVelocity;
+    const friction = 0.95; // Damping factor
+    const minVelocity = 0.01;
+    
+    function momentumStep() {
+      if (Math.abs(velocity) < minVelocity) {
+        return;
+      }
+      
+      // Apply velocity to position
+      const delta = velocity * 0.01;
+      const newPosition = Math.max(0, Math.min(1, animatedPosition + delta));
+      
+      animatedPosition = newPosition;
+      
+      // Calculate actual value and update
+      const actualValue = minValue + (newPosition * (maxValue - minValue));
+      updateSliderValue(actualValue);
+      
+      onScroll?.(newPosition);
+      
+      // Apply friction
+      velocity *= friction;
+      
+      // Continue momentum
+      velocityAnimationFrame = requestAnimationFrame(momentumStep);
+    }
+    
+    velocityAnimationFrame = requestAnimationFrame(momentumStep);
+  }
+  
   $effect(() => {
     if (isDragging) {
       window.addEventListener('mousemove', handleMouseMove);
@@ -91,6 +174,21 @@
         window.removeEventListener('mouseup', handleMouseUp);
       };
     }
+  });
+  
+  // Listen for wheel events to capture scroll momentum
+  $effect(() => {
+    const handleWheel = (event: WheelEvent) => handleWheelScroll(event);
+    
+    // Add wheel listener to the window or a specific scrollable container
+    window.addEventListener('wheel', handleWheel, { passive: false });
+    
+    return () => {
+      window.removeEventListener('wheel', handleWheel);
+      if (velocityAnimationFrame) {
+        cancelAnimationFrame(velocityAnimationFrame);
+      }
+    };
   });
   
   // Calculate scroll position as percentage (0-1) from current value
