@@ -11,6 +11,7 @@ import {
   clearSelectedLines,
   getSelectedLines
 } from '$lib/stores/selectedLinesStore';
+import { showLineNumbers, hideLineNumbers } from '$lib/stores/lineNumberStore';
 
 // Helper function to convert number to ordinal (1st, 2nd, 3rd, 4th, etc.)
 function getOrdinal(n: number): string {
@@ -23,6 +24,23 @@ export class CommandParser {
   parse(command: string): CommandResult {
     const commandChars = command.split('');
     const commandStrFull = commandChars.join('');
+
+    // Handle :set commands (with or without colon)
+    if (commandStrFull.startsWith(':set ') || commandStrFull.startsWith('set ')) {
+      const setting = commandStrFull.startsWith(':set ') 
+        ? commandStrFull.substring(5).trim()
+        : commandStrFull.substring(4).trim();
+      
+      if (setting === 'number') {
+        showLineNumbers();
+        return { success: true, message: 'Line numbers enabled' };
+      } else if (setting === 'nonumber') {
+        hideLineNumbers();
+        return { success: true, message: 'Line numbers disabled' };
+      } else {
+        return { success: false, message: `Unknown setting: ${setting}` };
+      }
+    }
 
     
     // Process command for line selection

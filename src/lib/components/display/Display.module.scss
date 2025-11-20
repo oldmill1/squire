@@ -104,6 +104,11 @@
   transition: opacity 0.2s ease;
 }
 
+.hideLineNumbers::before {
+  opacity: 0;
+  pointer-events: none;
+}
+
 .emptyState {
   display: flex;
   align-items: center;

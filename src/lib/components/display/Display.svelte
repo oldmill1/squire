@@ -3,6 +3,7 @@
   import { currentLineStore } from '$lib/stores/currentLineStore';
   import { debugStore, resetDebugStore, updateLineContainerHeight, updateLineCount, updateTransformValue, updateLineHeightIncrement } from '$lib/stores/debugStore';
   import { fontSizeStore } from '$lib/stores/fontSizeStore';
+  import { lineNumberVisibilityStore } from '$lib/stores/lineNumberStore';
   import { modeStore } from '$lib/stores/modeStore';
   import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
   import { textStore } from '$lib/stores/textStore';
@@ -17,6 +18,7 @@
   const currentLine = $derived($currentLineStore);
   const selectedLines = $derived($selectedLinesStore);
   const debugInfo = $derived($debugStore);
+  const showLineNumbers = $derived($lineNumberVisibilityStore);
   let showSquire = $state(false);
   let fading = $state(false);
   let contentVisible = $state(false);
@@ -197,7 +199,7 @@
           {@const isCurrent = index === currentLine}
           {@const cleanLine = line}
           <span 
-            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''}`} 
+            class={`${styles.line} ${isCurrent ? styles.currentLine : ''} ${isSelected ? styles.selectedLine : ''} ${!showLineNumbers ? styles.hideLineNumbers : ''}`} 
             data-line={lineNum}
             data-selected={isSelected}
           >
