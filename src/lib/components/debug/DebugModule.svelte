@@ -16,7 +16,7 @@
 	}
 </script>
 
-<div class={`${styles.debugModule} ${currentMode === 'interactive' ? styles.borderInteractive : styles.borderScript}`}>
+<div class={`${styles.debugModule} ${currentMode === 'insert' ? styles.borderInteractive : styles.borderScript}`}>
 	<div class={styles.content}>
 		<div class={styles.info}>y: {debugInfo.transformValue.toFixed(2)}px</div>
 		<div class={styles.info}>inc: {debugInfo.lastLineHeightIncrement.toFixed(2)}px</div>

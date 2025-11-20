@@ -91,8 +91,8 @@
   }
 
   $effect(() => {
-    if (currentMode === 'interactive' && showSquire) {
-      // Start fading when entering interactive mode
+    if (currentMode === 'insert' && showSquire) {
+      // Start fading when entering insert mode
       fading = true;
       // Hide completely after animation
       setTimeout(() => {

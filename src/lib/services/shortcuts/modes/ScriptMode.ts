@@ -38,9 +38,9 @@ export class ScriptMode implements ModeHandler {
       {
         key: 'i',
         action: () => {
-          this.manager.switchToMode('interactive');
+          this.manager.switchToMode('insert');
         },
-        description: 'Switch to interactive mode'
+        description: 'Switch to insert mode'
       },
       {
         key: ':',

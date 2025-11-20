@@ -4,7 +4,7 @@ export type { Mode, ModeHandler, CommandResult, ShortcutCategory } from './types
 
 export { ScriptMode } from './modes/ScriptMode';
 export { CommandMode } from './modes/CommandMode';
-export { InteractiveMode } from './modes/InteractiveMode';
+export { InsertMode } from './modes/InsertMode';
 
 export { FontShortcuts } from './categories/FontShortcuts';
 export { SystemShortcuts } from './categories/SystemShortcuts';

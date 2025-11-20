@@ -1,6 +1,6 @@
 import { writable } from 'svelte/store';
 
-export type Mode = 'interactive' | 'script' | 'command';
+export type Mode = 'insert' | 'script' | 'command';
 
 export const modeStore = writable<Mode>('script');
 

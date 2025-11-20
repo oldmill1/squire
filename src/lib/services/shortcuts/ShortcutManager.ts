@@ -3,7 +3,7 @@ import type { Mode, ModeHandler } from './types';
 import { setMode } from '$lib/stores/modeStore';
 import { ScriptMode } from './modes/ScriptMode';
 import { CommandMode } from './modes/CommandMode';
-import { InteractiveMode } from './modes/InteractiveMode';
+import { InsertMode } from './modes/InsertMode';
 
 export class ShortcutManager {
   private modes: Map<Mode, ModeHandler> = new Map();
@@ -13,7 +13,7 @@ export class ShortcutManager {
     // Auto-register default modes
     this.registerMode(new ScriptMode(this));
     this.registerMode(new CommandMode(this));
-    this.registerMode(new InteractiveMode(this));
+    this.registerMode(new InsertMode(this));
     
     // Don't get initial mode from store - force script mode on initialization
     this.currentMode = 'script';

@@ -5,8 +5,8 @@ import { ShortcutManager } from '../ShortcutManager';
 import { appendText, insertNewline, deleteCharacter, deleteForward } from '$lib/stores/textStore';
 import { clearSelectedLines } from '$lib/stores/selectedLinesStore';
 
-export class InteractiveMode implements ModeHandler {
-  mode: Mode = 'interactive';
+export class InsertMode implements ModeHandler {
+  mode: Mode = 'insert';
   private manager: ShortcutManager;
 
   constructor(manager: ShortcutManager) {
@@ -14,7 +14,7 @@ export class InteractiveMode implements ModeHandler {
   }
 
   enter(): void {
-    // Clear selection when entering interactive mode
+    // Clear selection when entering insert mode
     clearSelectedLines();
 
     // Set up character input handler for typing
