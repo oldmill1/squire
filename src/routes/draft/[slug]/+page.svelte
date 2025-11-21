@@ -43,7 +43,10 @@
         // Load cursor position from document if it exists
         if (document.cursorPosition) {
           const { setCursorPosition } = await import('$lib/stores/cursorStore');
+          const { currentLineStore } = await import('$lib/stores/currentLineStore');
+          
           setCursorPosition(document.cursorPosition.line, document.cursorPosition.col);
+          currentLineStore.set(document.cursorPosition.line);
         }
         
         // Initialize shortcuts for keyboard input
