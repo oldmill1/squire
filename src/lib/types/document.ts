@@ -16,6 +16,7 @@ export interface Document extends DocumentMeta {
     col: number;
     want_col: number;       // Preferred column when moving vertically
   };
+  _rev?: string;            // PouchDB revision (for updates)
 }
 
 // Document list for UI

@@ -1,28 +1,24 @@
-import { writable } from 'svelte/store';
+import { writable, get } from 'svelte/store';
 import { showSaveNotification } from './saveNotificationStore';
 import { moveCursorToEndOfLine, getCursorPosition, setCursorPosition, moveCursorToLineEnd } from './cursorStore';
 import { cursorStore } from './cursorStore';
 import { currentLineStore } from './currentLineStore';
 import { setRegister, getRegister } from './registerStore';
 import { settingsService } from '../services/settingsService';
+import { activeDocumentStore } from './activeDocumentStore';
+import { documentService } from '../services/documentService';
+import { debouncedSave } from './debouncedSaveStore';
 
 const STORAGE_KEY = 'squire-text';
 
 export const textStore = writable<string[]>([]);
 
-// Save to localStorage
+// Save to PouchDB (or localStorage as fallback)
 export async function saveToLocalStorage() {
   if (typeof window === 'undefined') return; // Skip during SSR
   
-  let currentLines: string[] = [];
-  textStore.subscribe(value => currentLines = value)();
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(currentLines));
-  
-  // Also save cursor position to PouchDB
-  await saveCursorPosition();
-  
-  // Show save notification
-  showSaveNotification();
+  // Use debounced save to prevent conflicts
+  debouncedSave();
 }
 
 // Load from localStorage (text only, not cursor position)
@@ -368,11 +364,26 @@ export async function pasteLineAfterCurrent() {
 export async function saveCursorPosition() {
   try {
     const cursor = getCursorPosition();
-    await settingsService.setSetting('cursorPosition', {
-      line: cursor.line,
-      col: cursor.col,
-      want_col: cursor.want_col
-    });
+    const activeDoc = get(activeDocumentStore);
+    
+    if (activeDoc) {
+      // Save cursor position to active document
+      await documentService.saveDocument({
+        ...activeDoc,
+        cursorPosition: {
+          line: cursor.line,
+          col: cursor.col,
+          want_col: cursor.want_col
+        }
+      });
+    } else {
+      // Fallback to global settings
+      await settingsService.setSetting('cursorPosition', {
+        line: cursor.line,
+        col: cursor.col,
+        want_col: cursor.want_col
+      });
+    }
   } catch (error) {
     console.error('Failed to save cursor position:', error);
   }

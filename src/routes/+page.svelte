@@ -19,7 +19,11 @@
       const newDoc = await documentService.createNewDocument();
       // Remove "doc:" prefix for cleaner URL
       const slug = newDoc._id.replace('doc:', '');
-      goto(`/draft/${slug}`);
+      
+      // Wait a bit longer to ensure document is fully saved in PouchDB
+      setTimeout(() => {
+        goto(`/draft/${slug}`);
+      }, 500);
     } catch (error) {
       console.error('Failed to create new draft:', error);
     }

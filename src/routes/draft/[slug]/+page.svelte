@@ -3,6 +3,13 @@
   import { page } from '$app/stores';
   import { documentService } from '$lib/services/documentService';
   import type { Document } from '$lib/types/document';
+  import Userinput from '$lib/components/userInput/Userinput.svelte';
+  import Statusbar from '$lib/components/statusBar/Statusbar.svelte';
+  import Display from '$lib/components/display/Display.svelte';
+  import ScrollBar from '$lib/components/scrollBar/ScrollBar.svelte';
+  import { textStore } from '$lib/stores/textStore';
+  import { initializeShortcuts } from '$lib/services/shortcuts';
+  import { activeDocumentStore } from '$lib/stores/activeDocumentStore';
 
   let document = $state<Document | null>(null);
   let loading = $state(true);
@@ -26,6 +33,21 @@
       document = await documentService.loadDocument(docId);
       if (!document) {
         error = 'Document not found';
+      } else {
+        // Set as active document
+        activeDocumentStore.set(document);
+        
+        // Load document lines into global textStore
+        textStore.set(document.lines);
+        
+        // Load cursor position from document if it exists
+        if (document.cursorPosition) {
+          const { setCursorPosition } = await import('$lib/stores/cursorStore');
+          setCursorPosition(document.cursorPosition.line, document.cursorPosition.col);
+        }
+        
+        // Initialize shortcuts for keyboard input
+        initializeShortcuts();
       }
     } catch (err) {
       console.error('Error loading document:', err);
@@ -46,22 +68,13 @@
     <a href="/">← Back to home</a>
   </div>
 {:else if document}
-  <div style="padding: 20px; font-family: monospace;">
-    <h1>{document.title}</h1>
-    <p><strong>Document ID:</strong> {document._id}</p>
-    <p><strong>Created:</strong> {document.createdAt.toLocaleString()}</p>
-    <p><strong>Updated:</strong> {document.updatedAt.toLocaleString()}</p>
-    <p><strong>Line count:</strong> {document.lines.length}</p>
-    
-    <h2>Lines:</h2>
-    {#if document.lines.length === 0}
-      <p><em>No lines yet (empty document)</em></p>
-    {:else}
-      <pre>{document.lines.join('\n')}</pre>
-    {/if}
-    
-    <div style="margin-top: 20px;">
-      <a href="/">← Back to home</a>
-    </div>
-  </div>
+  <!-- Editor components -->
+  <Userinput />
+  <Statusbar centerText={document.title} rightText="" />
+  <Display />
+  <ScrollBar 
+    minValue={0} 
+    maxValue={100} 
+    currentValue={0} 
+  />
 {/if}

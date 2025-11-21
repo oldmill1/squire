@@ -38,7 +38,8 @@ export const documentService = {
         updatedAt: new Date(doc.updatedAt),
         lineCount: doc.lines?.length || 0,
         lines: doc.lines || [],
-        cursorPosition: doc.cursorPosition
+        cursorPosition: doc.cursorPosition,
+        _rev: doc._rev // Include the revision
       };
     } catch (error: any) {
       if (error.status === 404 || error.name === 'not_found') {
@@ -52,8 +53,21 @@ export const documentService = {
   // Save document (creates or updates)
   async saveDocument(doc: Document): Promise<void> {
     try {
+      // Get the latest document to get the current revision
+      let existingDoc;
+      try {
+        existingDoc = await pouchdbService.get(doc._id);
+      } catch (error: any) {
+        // Document doesn't exist yet (404 not_found is expected)
+        if (error.status !== 404 && error.name !== 'not_found') {
+          console.error('Error getting existing document:', error);
+          throw error;
+        }
+      }
+
       const pouchDoc = {
         _id: doc._id,
+        _rev: existingDoc?._rev, // Include revision if document exists
         type: doc.type,
         title: doc.title,
         createdAt: doc.createdAt.toISOString(),
@@ -61,17 +75,6 @@ export const documentService = {
         lines: doc.lines,
         cursorPosition: doc.cursorPosition
       };
-
-      // Try to get existing document first to get _rev
-      try {
-        const existing = await pouchdbService.get(doc._id);
-        (pouchDoc as any)._rev = existing._rev;
-      } catch (error: any) {
-        // Document doesn't exist yet (404 not_found is expected)
-        if (error.status !== 404 && error.name !== 'not_found') {
-          console.error('Error checking existing document:', error);
-        }
-      }
 
       await pouchdbService.upsert(pouchDoc);
     } catch (error) {
