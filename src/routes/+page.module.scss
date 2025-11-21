@@ -57,7 +57,7 @@
   text-align: center;
   z-index: 10;
   position: relative;
-  max-width: 400px;
+  max-width: 500px;
   width: 100%;
 }
 
@@ -149,6 +149,13 @@
   flex-direction: column;
   gap: 16px;
   margin-bottom: 60px;
+}
+
+.bottomButtons {
+  display: flex;
+  flex-direction: row;
+  gap: 16px;
+  justify-content: center;
 }
 
 .primaryButton {
