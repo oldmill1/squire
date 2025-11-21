@@ -3,7 +3,6 @@
   import { fade, fly } from 'svelte/transition';
   import { onMount } from 'svelte';
   import styles from './+page.module.scss';
-  import SplashIcon from '$lib/components/splash/SplashIcon.svelte';
   import BackgroundShapes from '$lib/components/splash/BackgroundShapes.svelte';
   import { documentService } from '$lib/services/documentService';
 
@@ -37,10 +36,11 @@
   <BackgroundShapes />
   
   <div class={styles.splashContent}>
-    <SplashIcon {mounted} />
-    
     {#if mounted}
       <h1 class={styles.appTitle} transition:fly={{ y: 20, duration: 600, delay: 200 }}><span class={styles.titleScript}>Squire</span></h1>
+      
+      <div style="margin-bottom: 60px;"></div>
+      
       <p class={styles.appSubtitle} transition:fly={{ y: 20, duration: 600, delay: 400 }}><span class={styles.futuraText}>FinalDraft</span> meets <span class={styles.codeText}>vim</span></p>
       
       <div class={styles.actionButtons}>
