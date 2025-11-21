@@ -55,15 +55,16 @@
         <button class={styles.secondaryButton} transition:fly={{ y: 20, duration: 600, delay: 700 }} onclick={() => console.log('Open drafts')}>
           Open Drafts
         </button>
-        <div class={styles.bottomButtons}>
-          <button class={styles.textButton} transition:fly={{ y: 20, duration: 600, delay: 800 }} onclick={() => console.log('About')}>
-            How to Use Squire
-          </button>
-          <button class={styles.textButton} transition:fly={{ y: 20, duration: 600, delay: 900 }} onclick={() => goto('/db')}>
-            Database
-          </button>
-        </div>
       </div>
     {/if}
+  </div>
+  
+  <div class={styles.bottomButtons}>
+    <button class={styles.textButton} transition:fly={{ y: 20, duration: 600, delay: 800 }} onclick={() => console.log('About')}>
+      How to Use Squire
+    </button>
+    <button class={styles.textButton} transition:fly={{ y: 20, duration: 600, delay: 900 }} onclick={() => goto('/db')}>
+      Database
+    </button>
   </div>
 </div>
