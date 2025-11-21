@@ -16,10 +16,19 @@
   let error = $state<string | null>(null);
 
   async function waitForPouchDB() {
-    // Wait for PouchDB to be initialized
+    // Wait for PouchDB to be initialized with timeout
+    const maxWaitTime = 5000; // 5 seconds max wait
+    const startTime = Date.now();
+    
     while (typeof window !== 'undefined' && !(window as any).pouchDBInstance) {
+      if (Date.now() - startTime > maxWaitTime) {
+        throw new Error('PouchDB initialization timeout after 5 seconds');
+      }
       await new Promise(resolve => setTimeout(resolve, 100));
     }
+    
+    // Additional wait to ensure database is fully ready
+    await new Promise(resolve => setTimeout(resolve, 200));
   }
 
   onMount(async () => {
@@ -54,7 +63,12 @@
       }
     } catch (err) {
       console.error('Error loading document:', err);
-      error = 'Failed to load document';
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+      if (errorMessage.includes('PouchDB initialization timeout')) {
+        error = 'Database initialization failed. Please refresh the page.';
+      } else {
+        error = 'Failed to load document';
+      }
     } finally {
       loading = false;
     }

@@ -8,6 +8,7 @@
   import { documentService } from '$lib/services/documentService';
 
   let mounted = $state(false);
+  let isCreating = $state(false);
   
   onMount(() => {
     // Wait for client-side hydration before showing animations
@@ -15,6 +16,7 @@
   });
 
   async function createNewDraft() {
+    isCreating = true;
     try {
       const newDoc = await documentService.createNewDocument();
       // Remove "doc:" prefix for cleaner URL
@@ -26,6 +28,7 @@
       }, 500);
     } catch (error) {
       console.error('Failed to create new draft:', error);
+      isCreating = false;
     }
   }
 </script>
@@ -41,8 +44,13 @@
       <p class={styles.appSubtitle} transition:fly={{ y: 20, duration: 600, delay: 400 }}><span class={styles.futuraText}>FinalDraft</span> meets <span class={styles.codeText}>vim</span></p>
       
       <div class={styles.actionButtons}>
-        <button class={styles.primaryButton} transition:fly={{ y: 20, duration: 600, delay: 600 }} onclick={createNewDraft}>
-          New Draft
+        <button class={`${styles.primaryButton} ${isCreating ? styles.loading : ''}`} transition:fly={{ y: 20, duration: 600, delay: 600 }} onclick={createNewDraft} disabled={isCreating}>
+          {#if isCreating}
+            <span class={styles.spinner}></span>
+            Creating...
+          {:else}
+            New Draft
+          {/if}
         </button>
         <button class={styles.secondaryButton} transition:fly={{ y: 20, duration: 600, delay: 700 }} onclick={() => console.log('Open drafts')}>
           Open Drafts

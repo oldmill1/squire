@@ -27,6 +27,11 @@ export const documentService = {
   // Get full document by ID
   async loadDocument(id: string): Promise<Document | null> {
     try {
+      // Ensure PouchDB is ready before attempting to load
+      if (typeof window !== 'undefined' && !(window as any).pouchDBInstance) {
+        throw new Error('PouchDB not initialized');
+      }
+      
       const doc = await pouchdbService.get(id);
       if (doc.type !== 'document') return null;
       
@@ -44,6 +49,10 @@ export const documentService = {
     } catch (error: any) {
       if (error.status === 404 || error.name === 'not_found') {
         return null;
+      }
+      if (error.message === 'PouchDB not initialized') {
+        console.warn('PouchDB not ready when trying to load document');
+        throw error;
       }
       console.error('Error loading document:', error);
       return null;

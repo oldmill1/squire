@@ -31,8 +31,11 @@ export const pouchdbService = {
 		try {
 			const doc = await db.get(id);
 			return doc;
-		} catch (error) {
-			console.error('Error getting document:', error);
+		} catch (error: any) {
+			// Don't log 404 errors as they're expected in some cases
+			if (error.status !== 404 && error.name !== 'not_found') {
+				console.error('Error getting document:', error);
+			}
 			throw error;
 		}
 	},
