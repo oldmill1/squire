@@ -1,6 +1,7 @@
 // Document metadata (lightweight, loaded often)
 export interface DocumentMeta {
-  _id: string;              // Unique slug (e.g., "2024-01-15-draft-1")
+  _id: string;              // PouchDB ID with "doc:" prefix (e.g., "doc:2024-01-15-draft-1")
+  type: 'document';         // PouchDB document type for querying
   title: string;            // Display name
   updatedAt: Date;          // For sorting
   lineCount: number;        // For UI display

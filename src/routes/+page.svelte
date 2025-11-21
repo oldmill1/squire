@@ -5,6 +5,7 @@
   import styles from './+page.module.scss';
   import SplashIcon from '$lib/components/splash/SplashIcon.svelte';
   import BackgroundShapes from '$lib/components/splash/BackgroundShapes.svelte';
+  import { documentService } from '$lib/services/documentService';
 
   let mounted = $state(false);
   
@@ -12,6 +13,17 @@
     // Wait for client-side hydration before showing animations
     mounted = true;
   });
+
+  async function createNewDraft() {
+    try {
+      const newDoc = await documentService.createNewDocument();
+      // Remove "doc:" prefix for cleaner URL
+      const slug = newDoc._id.replace('doc:', '');
+      goto(`/draft/${slug}`);
+    } catch (error) {
+      console.error('Failed to create new draft:', error);
+    }
+  }
 </script>
 
 <div class={styles.splashContainer}>
@@ -25,7 +37,7 @@
       <p class={styles.appSubtitle} transition:fly={{ y: 20, duration: 600, delay: 400 }}><span class={styles.futuraText}>FinalDraft</span> meets <span class={styles.codeText}>vim</span></p>
       
       <div class={styles.actionButtons}>
-        <button class={styles.primaryButton} transition:fly={{ y: 20, duration: 600, delay: 600 }} onclick={() => goto('/draft')}>
+        <button class={styles.primaryButton} transition:fly={{ y: 20, duration: 600, delay: 600 }} onclick={createNewDraft}>
           New Draft
         </button>
         <button class={styles.secondaryButton} transition:fly={{ y: 20, duration: 600, delay: 700 }} onclick={() => console.log('Open drafts')}>
