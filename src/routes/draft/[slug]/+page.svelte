@@ -7,6 +7,7 @@
   import Statusbar from '$lib/components/statusBar/Statusbar.svelte';
   import Display from '$lib/components/display/Display.svelte';
   import ScrollBar from '$lib/components/scrollBar/ScrollBar.svelte';
+  import MenuBar from '$lib/components/menuBar/MenuBar.svelte';
   import { textStore } from '$lib/stores/textStore';
   import { initializeShortcuts } from '$lib/services/shortcuts';
   import { activeDocumentStore } from '$lib/stores/activeDocumentStore';
@@ -85,6 +86,9 @@
     <a href="/">← Back to home</a>
   </div>
 {:else if document}
+  <!-- Menu Bar -->
+  <MenuBar />
+  
   <!-- Editor components -->
   <Userinput />
   <Statusbar centerText={document.title} rightText="" />

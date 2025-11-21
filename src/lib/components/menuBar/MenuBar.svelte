@@ -20,10 +20,14 @@
       label: 'New',
       shortcut: 'N',
       action: () => {
-        // Clear all text to create new document
-        import('$lib/stores/textStore').then(({ deleteAllLines }) => {
-          deleteAllLines();
-          console.log('New document created');
+        // Create new document and navigate to it
+        import('$lib/services/documentService').then(({ documentService }) => {
+          import('$app/navigation').then(({ goto }) => {
+            documentService.createNewDocument().then(newDoc => {
+              const slug = newDoc._id.replace('doc:', '');
+              goto(`/draft/${slug}`);
+            });
+          });
         });
       }
     }
@@ -57,11 +61,11 @@
     <button 
       type="button" 
       class={styles.menuItem} 
-      on:click={(e) => {
+      onclick={(e) => {
         item.action();
         (e.currentTarget as HTMLButtonElement).blur();
       }}
-      on:keydown={(e) => {
+      onkeydown={(e) => {
         if (e.key === 'Enter' || e.key === ' ') {
           e.preventDefault();
           item.action();
