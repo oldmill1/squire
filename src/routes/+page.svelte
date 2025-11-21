@@ -32,14 +32,8 @@
           Open Drafts
         </button>
         <button class={styles.textButton} transition:fly={{ y: 20, duration: 600, delay: 800 }} onclick={() => console.log('About')}>
-          About Squire
+          How to Use Squire
         </button>
-      </div>
-      
-      <div class={styles.versionInfo} transition:fade={{ duration: 600, delay: 900 }}>
-        <span class={styles.version}>Version 1</span>
-        <span class={styles.separator}>•</span>
-        <span class={styles.copyright}>© 2025 Squire</span>
       </div>
     {/if}
   </div>
