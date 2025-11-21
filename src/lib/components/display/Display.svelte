@@ -1,15 +1,15 @@
 <script lang="ts">
   import { animationService } from '$lib/services/animationService';
   import { currentLineStore } from '$lib/stores/currentLineStore';
-  import { debugStore, resetDebugStore, updateLineContainerHeight, updateLineCount, updateTransformValue, updateLineHeightIncrement } from '$lib/stores/debugStore';
+  import { cursorStore } from '$lib/stores/cursorStore';
+  import { debugStore, resetDebugStore, updateLineContainerHeight, updateLineCount, updateLineHeightIncrement, updateTransformValue } from '$lib/stores/debugStore';
   import { fontSizeStore } from '$lib/stores/fontSizeStore';
   import { lineNumberVisibilityStore } from '$lib/stores/lineNumberStore';
   import { modeStore } from '$lib/stores/modeStore';
   import { selectedLinesStore } from '$lib/stores/selectedLinesStore';
   import { textStore } from '$lib/stores/textStore';
   import { loadTransformFromLocalStorage, resetTransform, updateTransform } from '$lib/stores/transformStore';
-  import { cursorStore, getCursorPosition } from '$lib/stores/cursorStore';
-  import { visualStore, getNormalizedSelection } from '$lib/stores/visualStore';
+  import { getNormalizedSelection, visualStore } from '$lib/stores/visualStore';
   import { onMount } from 'svelte';
   import { fade } from 'svelte/transition';
   import Cursor from '../cursor/Cursor.svelte';
