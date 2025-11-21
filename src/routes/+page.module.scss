@@ -154,9 +154,9 @@
   background: rgba(255, 255, 255, 0.95);
   color: #333;
   border: none;
-  padding: 16px 32px;
+  padding: 8px 16px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -179,9 +179,9 @@
   background: rgba(255, 255, 255, 0.1);
   color: white;
   border: 1px solid rgba(255, 255, 255, 0.2);
-  padding: 14px 30px;
+  padding: 8px 16px;
   border-radius: 12px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
@@ -198,15 +198,14 @@
   background: transparent;
   color: rgba(255, 255, 255, 0.8);
   border: none;
-  padding: 12px 24px;
+  padding: 8px 16px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.2s ease;
 
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
     color: white;
   }
 }

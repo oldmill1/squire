@@ -37,7 +37,7 @@
       </div>
       
       <div class={styles.versionInfo} transition:fade={{ duration: 600, delay: 900 }}>
-        <span class={styles.version}>@oldmill1</span>
+        <span class={styles.version}>Version 1</span>
         <span class={styles.separator}>•</span>
         <span class={styles.copyright}>© 2025 Squire</span>
       </div>
