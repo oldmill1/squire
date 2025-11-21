@@ -76,26 +76,24 @@
   });
 </script>
 
-{#if loading}
-  <div style="padding: 20px;">
-    <p>Loading document...</p>
-  </div>
-{:else if error}
+{#if error}
   <div style="padding: 20px;">
     <p style="color: red;">{error}</p>
     <a href="/">← Back to home</a>
   </div>
-{:else if document}
+{:else}
   <!-- Menu Bar -->
   <MenuBar />
   
   <!-- Editor components -->
   <Userinput />
-  <Statusbar centerText={document.title} rightText="" />
-  <Display />
-  <ScrollBar 
-    minValue={0} 
-    maxValue={100} 
-    currentValue={0} 
-  />
+  <Statusbar centerText={loading ? 'Loading document...' : (document?.title || '')} rightText="" />
+  {#if document}
+    <Display />
+    <ScrollBar 
+      minValue={0} 
+      maxValue={100} 
+      currentValue={0} 
+    />
+  {/if}
 {/if}
