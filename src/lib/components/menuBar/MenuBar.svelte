@@ -19,16 +19,16 @@
     {
       label: 'New',
       shortcut: 'N',
-      action: () => {
-        // Create new document and navigate to it
-        import('$lib/services/documentService').then(({ documentService }) => {
-          import('$app/navigation').then(({ goto }) => {
-            documentService.createNewDocument().then(newDoc => {
-              const slug = newDoc._id.replace('doc:', '');
-              goto(`/draft/${slug}`);
-            });
-          });
-        });
+      action: async () => {
+        try {
+          const { documentService } = await import('$lib/services/documentService');
+          const { goto } = await import('$app/navigation');
+          const newDoc = await documentService.createNewDocument();
+          const slug = newDoc._id.replace('doc:', '');
+          goto(`/draft/${slug}`);
+        } catch (error) {
+          console.error('Failed to create new document:', error);
+        }
       }
     }
   ];
