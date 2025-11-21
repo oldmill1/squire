@@ -26,7 +26,6 @@
 .shape {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
   backdrop-filter: blur(10px);
 }
 
@@ -35,6 +34,7 @@
   height: 300px;
   top: -150px;
   left: -150px;
+  background: rgba(255, 182, 193, 0.15); /* Light pink */
 }
 
 .shape2 {
@@ -42,6 +42,7 @@
   height: 200px;
   bottom: -100px;
   right: -100px;
+  background: rgba(173, 216, 230, 0.15); /* Light blue */
 }
 
 .shape3 {
@@ -49,6 +50,7 @@
   height: 150px;
   top: 50%;
   left: -75px;
+  background: rgba(221, 160, 221, 0.15); /* Light plum */
 }
 
 .shape4 {
@@ -56,6 +58,7 @@
   height: 100px;
   top: 20%;
   right: 10%;
+  background: rgba(152, 251, 152, 0.15); /* Light green */
 }
 
 .splashContent {
@@ -108,15 +111,44 @@
   color: white;
   margin-bottom: 12px;
   letter-spacing: -0.02em;
-  animation: fadeInUp 1s ease-out 0.2s both;
+}
+
+.titleScript {
+  font-family: 'Playwrite NZ Guides', cursive;
+  font-size: 56px;
+  font-weight: 400;
+  font-style: italic;
+  color: white;
+  letter-spacing: -0.01em;
 }
 
 .appSubtitle {
   font-size: 20px;
   color: rgba(255, 255, 255, 0.8);
-  margin-bottom: 60px;
+  margin: 42px 0 30px;
   font-weight: 400;
-  letter-spacing: 0.01em;
+  letter-spacing: 0.03em;
+  line-height: 1.5;
+}
+
+.codeText {
+  font-family: 'JetBrains Mono', 'Courier New', monospace;
+  background: rgba(0, 0, 0, 0.3);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 18px;
+  color: #ff6b6b;
+  font-weight: 500;
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.futuraText {
+  font-family: 'Futura', 'Trebuchet MS', 'Arial', sans-serif;
+  color: rgba(255, 255, 255, 0.95);
+  font-size: 22px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
 }
 
 .actionButtons {
@@ -124,7 +156,6 @@
   flex-direction: column;
   gap: 16px;
   margin-bottom: 60px;
-  animation: fadeInUp 1s ease-out 0.6s both;
 }
 
 .primaryButton {

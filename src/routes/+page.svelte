@@ -1,7 +1,7 @@
 <script lang="ts">
   import { goto } from '$app/navigation';
-  import { fade, fly, slide } from 'svelte/transition';
   import { onMount } from 'svelte';
+  import { fade, fly } from 'svelte/transition';
   import styles from './+page.module.scss';
 
   let mounted = $state(false);
@@ -78,8 +78,8 @@
     </div>
     
     {#if mounted}
-      <h1 class={styles.appTitle} transition:fly={{ y: 20, duration: 600, delay: 200 }}>Scribe</h1>
-      <p class={styles.appSubtitle} transition:fly={{ y: 20, duration: 600, delay: 400 }}>Write beautifully. Think clearly.</p>
+      <h1 class={styles.appTitle} transition:fly={{ y: 20, duration: 600, delay: 200 }}><span class={styles.titleScript}>Squire</span></h1>
+      <p class={styles.appSubtitle} transition:fly={{ y: 20, duration: 600, delay: 400 }}><span class={styles.futuraText}>FinalDraft</span> meets <span class={styles.codeText}>vim</span></p>
       
       <div class={styles.actionButtons}>
         <button class={styles.primaryButton} transition:fly={{ y: 20, duration: 600, delay: 600 }} onclick={() => goto('/draft')}>
@@ -89,14 +89,14 @@
           Open Drafts
         </button>
         <button class={styles.textButton} transition:fly={{ y: 20, duration: 600, delay: 800 }} onclick={() => console.log('About')}>
-          About Scribe
+          About Squire
         </button>
       </div>
       
       <div class={styles.versionInfo} transition:fade={{ duration: 600, delay: 900 }}>
         <span class={styles.version}>@oldmill1</span>
         <span class={styles.separator}>•</span>
-        <span class={styles.copyright}>© 2025 Scribe</span>
+        <span class={styles.copyright}>© 2025 Squire</span>
       </div>
     {/if}
   </div>
