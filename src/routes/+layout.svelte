@@ -51,7 +51,6 @@
 	<link rel="icon" href={favicon} />
 </svelte:head>
 
-<MenuBar />
 <PouchDBInitializer />
 {@render children()}
 {#if debugVisible}
