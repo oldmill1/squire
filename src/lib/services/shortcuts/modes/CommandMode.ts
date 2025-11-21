@@ -33,7 +33,9 @@ export class CommandMode implements ModeHandler {
         removeFromCommand();
       } else if (key === 'Enter') {
         // Handle command execution on Enter
-        this.executeCommand();
+        this.executeCommand().catch(error => {
+          console.error('Error executing command:', error);
+        });
       }
     });
 
@@ -57,11 +59,11 @@ export class CommandMode implements ModeHandler {
     console.log('Exited command mode');
   }
 
-  private executeCommand(): void {
+  private async executeCommand(): Promise<void> {
     const command = getCommand();
     console.log('Command characters:', command.split(''));
     
-    const result = this.commandParser.parse(command);
+    const result = await this.commandParser.parse(command);
     
     if (result.message) {
       console.log(result.message);

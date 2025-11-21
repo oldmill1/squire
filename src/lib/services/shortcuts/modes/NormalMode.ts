@@ -5,7 +5,7 @@ import { FontShortcuts } from '../categories/FontShortcuts';
 import { SystemShortcuts } from '../categories/SystemShortcuts';
 import { ShortcutManager } from '../ShortcutManager';
 import { currentLineStore } from '$lib/stores/currentLineStore';
-import { textStore, getLines, deleteCurrentLine, pasteLineAfterCurrent } from '$lib/stores/textStore';
+import { textStore, getLines, deleteCurrentLine, pasteLineAfterCurrent, saveCursorPosition } from '$lib/stores/textStore';
 import { setCursorLine, setCursorColumn, getCursorPosition, setCursorWantCol, moveCursorToLineEnd, setCursorPosition } from '$lib/stores/cursorStore';
 import { startVisualSelection } from '$lib/stores/visualStore';
 
@@ -95,7 +95,7 @@ export class NormalMode implements ModeHandler {
       },
       {
         key: 'k',
-        action: () => {
+        action: async () => {
           this.clearPendingCommand();
           // Navigate up: decrease current line by 1, but not below 0
           const lines = getLines();
@@ -110,12 +110,14 @@ export class NormalMode implements ModeHandler {
             
             return newLine;
           });
+          // Save cursor position after movement
+          await saveCursorPosition();
         },
         description: 'Move current line up'
       },
       {
         key: 'j',
-        action: () => {
+        action: async () => {
           this.clearPendingCommand();
           // Navigate down: increase current line by 1, but not beyond available lines
           const lines = getLines();
@@ -131,12 +133,14 @@ export class NormalMode implements ModeHandler {
             
             return newLine;
           });
+          // Save cursor position after movement
+          await saveCursorPosition();
         },
         description: 'Move current line down'
       },
       {
         key: 'h',
-        action: () => {
+        action: async () => {
           this.clearPendingCommand();
           // Move cursor left
           const cursor = getCursorPosition();
@@ -147,12 +151,14 @@ export class NormalMode implements ModeHandler {
           const newCol = Math.max(0, cursor.col - 1);
           setCursorPosition(cursor.line, newCol);
           currentLineStore.set(cursor.line);
+          // Save cursor position after movement
+          await saveCursorPosition();
         },
         description: 'Move cursor left'
       },
       {
         key: 'l',
-        action: () => {
+        action: async () => {
           this.clearPendingCommand();
           // Move cursor right
           const cursor = getCursorPosition();
@@ -163,6 +169,8 @@ export class NormalMode implements ModeHandler {
           const newCol = Math.min(currentLine.length, cursor.col + 1);
           setCursorPosition(cursor.line, newCol);
           currentLineStore.set(cursor.line);
+          // Save cursor position after movement
+          await saveCursorPosition();
         },
         description: 'Move cursor right'
       },

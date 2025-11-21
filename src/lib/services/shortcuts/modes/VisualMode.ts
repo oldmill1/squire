@@ -3,7 +3,7 @@ import type { Shortcut } from '../../keyboardService';
 import { keyboardService } from '../../keyboardService';
 import { ShortcutManager } from '../ShortcutManager';
 import { getCursorPosition, setCursorPosition } from '$lib/stores/cursorStore';
-import { getLines } from '$lib/stores/textStore';
+import { getLines, saveCursorPosition } from '$lib/stores/textStore';
 import { clearVisualSelection, updateVisualSelection, getVisualState } from '$lib/stores/visualStore';
 
 export class VisualMode implements ModeHandler {
@@ -35,7 +35,7 @@ export class VisualMode implements ModeHandler {
       // Navigation shortcuts that extend selection
       {
         key: 'h',
-        action: () => {
+        action: async () => {
           // Move cursor left and extend selection
           const cursor = getCursorPosition();
           const lines = getLines();
@@ -44,12 +44,13 @@ export class VisualMode implements ModeHandler {
           const newCol = Math.max(0, cursor.col - 1);
           setCursorPosition(cursor.line, newCol);
           updateVisualSelection({ line: cursor.line, col: newCol });
+          await saveCursorPosition();
         },
         description: 'Move cursor left and extend selection'
       },
       {
         key: 'l',
-        action: () => {
+        action: async () => {
           // Move cursor right and extend selection
           const cursor = getCursorPosition();
           const lines = getLines();
@@ -58,12 +59,13 @@ export class VisualMode implements ModeHandler {
           const newCol = Math.min(currentLine.length, cursor.col + 1);
           setCursorPosition(cursor.line, newCol);
           updateVisualSelection({ line: cursor.line, col: newCol });
+          await saveCursorPosition();
         },
         description: 'Move cursor right and extend selection'
       },
       {
         key: 'k',
-        action: () => {
+        action: async () => {
           // Move cursor up and extend selection
           const cursor = getCursorPosition();
           const lines = getLines();
@@ -73,12 +75,13 @@ export class VisualMode implements ModeHandler {
           
           setCursorPosition(newLine, newCol);
           updateVisualSelection({ line: newLine, col: newCol });
+          await saveCursorPosition();
         },
         description: 'Move cursor up and extend selection'
       },
       {
         key: 'j',
-        action: () => {
+        action: async () => {
           // Move cursor down and extend selection
           const cursor = getCursorPosition();
           const lines = getLines();
@@ -89,6 +92,7 @@ export class VisualMode implements ModeHandler {
           
           setCursorPosition(newLine, newCol);
           updateVisualSelection({ line: newLine, col: newCol });
+          await saveCursorPosition();
         },
         description: 'Move cursor down and extend selection'
       },

@@ -1,26 +1,31 @@
 import { writable } from 'svelte/store';
 import { showSaveNotification } from './saveNotificationStore';
 import { moveCursorToEndOfLine, getCursorPosition, setCursorPosition, moveCursorToLineEnd } from './cursorStore';
+import { cursorStore } from './cursorStore';
 import { currentLineStore } from './currentLineStore';
 import { setRegister, getRegister } from './registerStore';
+import { settingsService } from '../services/settingsService';
 
 const STORAGE_KEY = 'squire-text';
 
 export const textStore = writable<string[]>([]);
 
 // Save to localStorage
-export function saveToLocalStorage() {
+export async function saveToLocalStorage() {
   if (typeof window === 'undefined') return; // Skip during SSR
   
   let currentLines: string[] = [];
   textStore.subscribe(value => currentLines = value)();
   localStorage.setItem(STORAGE_KEY, JSON.stringify(currentLines));
   
+  // Also save cursor position to PouchDB
+  await saveCursorPosition();
+  
   // Show save notification
   showSaveNotification();
 }
 
-// Load from localStorage
+// Load from localStorage (text only, not cursor position)
 export function loadFromLocalStorage() {
   if (typeof window === 'undefined') return false; // Skip during SSR
   
@@ -31,17 +36,11 @@ export function loadFromLocalStorage() {
       if (Array.isArray(lines)) {
         textStore.set(lines);
 
-        // Initialize cursor position to end of last line if there are lines
-        if (lines.length > 0) {
-          const lastLineIndex = lines.length - 1;
-          const lastLineText = lines[lastLineIndex] || '';
-          setCursorPosition(lastLineIndex, lastLineText.length);
-          currentLineStore.set(lastLineIndex);
-        } else {
-          // No lines, set cursor to 0,0
-          setCursorPosition(0, 0);
-          currentLineStore.set(0);
-        }
+        // Set cursor to end of file initially (cursor position will be restored later if PouchDB is available)
+        const lastLineIndex = lines.length - 1;
+        const lastLineText = lines[lastLineIndex] || '';
+        setCursorPosition(lastLineIndex, lastLineText.length);
+        currentLineStore.set(lastLineIndex);
 
         return true;
       }
@@ -52,7 +51,47 @@ export function loadFromLocalStorage() {
   return false;
 }
 
-export function appendText(char: string) {
+// Load cursor position from PouchDB (call this after PouchDB is ready)
+export async function loadCursorPositionAfterDBReady() {
+  try {
+    const lines = getLines();
+    if (lines.length === 0) return;
+
+    const savedCursor = await loadCursorPosition();
+    
+    if (savedCursor) {
+      // Validate that the saved cursor position is still valid
+      if (savedCursor.line >= 0 && savedCursor.line < lines.length) {
+        const targetLine = lines[savedCursor.line] || '';
+        const maxCol = targetLine.length;
+        
+        // Clamp column to line length and set cursor position
+        const validCol = Math.min(savedCursor.col, maxCol);
+        const validWantCol = Math.min(savedCursor.want_col || 0, maxCol);
+        
+        setCursorPosition(savedCursor.line, validCol);
+        // Set want_col separately if it's different from col
+        if (validWantCol !== validCol) {
+          cursorStore.update(position => ({ 
+            ...position, 
+            want_col: validWantCol
+          }));
+        }
+        currentLineStore.set(savedCursor.line);
+      } else {
+        // Saved line doesn't exist, keep cursor at end of file
+        const lastLineIndex = lines.length - 1;
+        const lastLineText = lines[lastLineIndex] || '';
+        setCursorPosition(lastLineIndex, lastLineText.length);
+        currentLineStore.set(lastLineIndex);
+      }
+    }
+  } catch (error) {
+    console.error('Failed to load cursor position after DB ready:', error);
+  }
+}
+
+export async function appendText(char: string) {
   textStore.update(lines => {
     const cursor = getCursorPosition();
     
@@ -77,10 +116,10 @@ export function appendText(char: string) {
       return newLines;
     }
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function insertNewline() {
+export async function insertNewline() {
   textStore.update(lines => {
     const cursor = getCursorPosition();
     
@@ -108,10 +147,10 @@ export function insertNewline() {
       return newLines;
     }
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function modifyLastLine(line: string) {
+export async function modifyLastLine(line: string) {
   textStore.update(lines => {
     if (lines.length === 0) {
       // No lines exist, create the first line
@@ -125,19 +164,19 @@ export function modifyLastLine(line: string) {
       return newLines;
     }
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function appendLine(line: string) {
+export async function appendLine(line: string) {
   textStore.update(lines => {
     const newLines = [...lines, line];
     moveCursorToEndOfLine(line);
     return newLines;
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function deleteCharacter() {
+export async function deleteCharacter() {
   textStore.update(lines => {
     if (lines.length === 0) return [];
     
@@ -170,16 +209,16 @@ export function deleteCharacter() {
     
     return newLines;
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function deleteForward() {
+export async function deleteForward() {
   // For now, this behaves the same as backspace
   // In a more complex implementation, this would consider cursor position
-  deleteCharacter();
+  await deleteCharacter();
 }
 
-export function deleteLine(lineNumber: number) {
+export async function deleteLine(lineNumber: number) {
   textStore.update(lines => {
     if (lines.length === 0 || lineNumber < 1 || lineNumber > lines.length) {
       return lines; // Return unchanged if invalid line number
@@ -207,18 +246,18 @@ export function deleteLine(lineNumber: number) {
     
     return newLines;
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function deleteAllLines() {
+export async function deleteAllLines() {
   textStore.set([]);
   // Reset cursor position to 0,0 when all lines are deleted
   setCursorPosition(0, 0);
   currentLineStore.set(0);
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function deleteLinesRange(startLine: number, endLine: number) {
+export async function deleteLinesRange(startLine: number, endLine: number) {
   textStore.update(lines => {
     if (lines.length === 0 || startLine < 1 || endLine < 1 || startLine > lines.length) {
       return lines; // Return unchanged if invalid range
@@ -250,7 +289,7 @@ export function deleteLinesRange(startLine: number, endLine: number) {
     
     return newLines;
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
 export function getText(): string {
@@ -265,7 +304,7 @@ export function getLines(): string[] {
   return currentLines;
 }
 
-export function deleteCurrentLine() {
+export async function deleteCurrentLine() {
   textStore.update(lines => {
     if (lines.length === 0) return [];
     
@@ -298,10 +337,10 @@ export function deleteCurrentLine() {
     
     return newLines;
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
 }
 
-export function pasteLineAfterCurrent() {
+export async function pasteLineAfterCurrent() {
   const register = getRegister();
   if (register.type !== 'line' || !register.content) return;
   
@@ -322,5 +361,35 @@ export function pasteLineAfterCurrent() {
     
     return newLines;
   });
-  saveToLocalStorage();
+  await saveToLocalStorage();
+}
+
+// Save cursor position to PouchDB
+export async function saveCursorPosition() {
+  try {
+    const cursor = getCursorPosition();
+    await settingsService.setSetting('cursorPosition', {
+      line: cursor.line,
+      col: cursor.col,
+      want_col: cursor.want_col
+    });
+  } catch (error) {
+    console.error('Failed to save cursor position:', error);
+  }
+}
+
+// Load cursor position from PouchDB
+export async function loadCursorPosition() {
+  try {
+    const saved = await settingsService.getSetting('cursorPosition');
+    
+    if (saved && typeof saved === 'object' && 
+        typeof saved.line === 'number' && 
+        typeof saved.col === 'number') {
+      return saved;
+    }
+  } catch (error) {
+    console.error('Failed to load cursor position:', error);
+  }
+  return null;
 }

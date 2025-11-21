@@ -4,7 +4,8 @@ import {
   modifyLastLine, 
   deleteLine, 
   deleteAllLines, 
-  deleteLinesRange
+  deleteLinesRange,
+  saveCursorPosition
 } from '$lib/stores/textStore';
 import { 
   setSelectedLines,
@@ -28,13 +29,10 @@ function getOrdinal(n: number): string {
 }
 
 export class CommandParser {
-  parse(command: string): CommandResult {
-    console.log('CommandParser.parse() received command:', `"${command}"`);
-    
+  async parse(command: string): Promise<CommandResult> {
     // Remove leading colon if present (for commands like ":1", ":1,2", etc.)
     if (command.startsWith(':') && !command.startsWith(':set') && !command.startsWith(':dopen') && !command.startsWith(':dclose')) {
       command = command.substring(1);
-      console.log('Removed leading colon, command now:', `"${command}"`);
     }
     
     const commandChars = command.split('');
@@ -134,10 +132,8 @@ export class CommandParser {
     } else {
       // Handle selection commands (including ranges)
       const commandStr = commandChars.join('');
-      console.log('Processing selection command:', `"${commandStr}"`);
 
       if (commandStr.includes(',')) {
-        console.log('Command contains comma - processing range selection');
         // Handle range selection (e.g., "1,3", "2,4")
         const [startStr, endStr] = commandStr.split(',');
         const startLine = parseInt(startStr);
@@ -158,7 +154,6 @@ export class CommandParser {
           return { success: false, message: 'Invalid range for selection' };
         }
       } else {
-        console.log('Command does not contain comma - processing single line selection');
         // Look for numbers in the command (single line selection)
         let numberStr = '';
         for (const char of commandChars) {
@@ -166,24 +161,21 @@ export class CommandParser {
             numberStr += char;
           }
         }
-        console.log('Extracted number string:', `"${numberStr}"`);
 
         if (numberStr.length > 0) {
           const lineNumber = parseInt(numberStr);
-          console.log('Parsed line number:', lineNumber);
 
           if (!isNaN(lineNumber) && lineNumber > 0) {
             // Move cursor to the specified line (convert to 0-based index)
             const lineIndex = lineNumber - 1;
-            console.log('Moving cursor to line index:', lineIndex);
             setCursorLine(lineIndex);
             setCurrentLine(lineIndex);
+            // Save cursor position to PouchDB
+            await saveCursorPosition();
             // Convert number to ordinal (1st, 2nd, 3rd, etc.)
             const ordinal = getOrdinal(lineNumber);
-            console.log(`Moved cursor to the ${ordinal} line`);
             return { success: true, message: `Moved cursor to the ${ordinal} line` };
           } else {
-            console.log('Invalid line number');
             return { success: false, message: 'Invalid line number' };
           }
         }

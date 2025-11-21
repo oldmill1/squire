@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { loadCursorPositionAfterDBReady } from '$lib/stores/textStore';
 
 	onMount(async () => {
 		try {
@@ -28,6 +29,11 @@
 						
 						// Make db globally available for the service
 						(window as any).pouchDBInstance = db;
+						
+						// Now that PouchDB is ready, load cursor position
+						loadCursorPositionAfterDBReady().catch(error => {
+							console.error('Failed to load cursor position after DB init:', error);
+						});
 					}).catch((error: any) => {
 						console.error('❌ PouchDB failed to initialize:', error);
 					});
