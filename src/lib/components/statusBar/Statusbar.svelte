@@ -4,13 +4,27 @@
   import { textStore } from '$lib/stores/textStore';
   import { saveNotificationStore } from '$lib/stores/saveNotificationStore';
   import { cursorStore } from '$lib/stores/cursorStore';
+  import { tweened } from 'svelte/motion';
   
   interface Props {
     centerText?: string;
     rightText?: string;
+    progress?: number; // 0-100 for progress bar mode
   }
   
-  let { centerText = 'Center Status', rightText = 'Right Status' }: Props = $props();
+  let { centerText = 'Center Status', rightText = 'Right Status', progress = undefined }: Props = $props();
+  
+  // Use tweened for smooth progress animation
+  const animatedProgress = tweened(0, { duration: 300, easing: (t) => t });
+  
+  // Update animated progress when progress prop changes
+  $effect(() => {
+    if (progress !== undefined) {
+      animatedProgress.set(progress);
+    } else {
+      animatedProgress.set(0);
+    }
+  });
   
   const currentLines = $derived($textStore);
   const saveNotification = $derived($saveNotificationStore);
@@ -55,7 +69,16 @@
 </script>
 
 <div class={styles.statusbar}>
-  <ModeStatus />
-  <div class={styles.center}>{centerDisplay}</div>
-  <div class={styles.right}>{displayCounts || rightText}</div>
+  {#if progress !== undefined}
+    <!-- Progress bar mode -->
+    <div class={styles.progressContainer}>
+      <div class={styles.progressBar} style="width: {$animatedProgress}%"></div>
+      <div class={styles.progressText}>{centerDisplay}</div>
+    </div>
+  {:else}
+    <!-- Normal mode -->
+    <ModeStatus />
+    <div class={styles.center}>{centerDisplay}</div>
+    <div class={styles.right}>{displayCounts || rightText}</div>
+  {/if}
 </div>

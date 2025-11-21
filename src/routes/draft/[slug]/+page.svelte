@@ -15,6 +15,7 @@
   let document = $state<Document | null>(null);
   let loading = $state(true);
   let error = $state<string | null>(null);
+  let progress = $state(0);
 
   async function waitForPouchDB() {
     // Wait for PouchDB to be initialized with timeout
@@ -35,6 +36,14 @@
   onMount(async () => {
     const slug = $page.params.slug;
     const docId = `doc:${slug}`;
+    
+    // Animate progress bar during loading
+    const progressInterval = setInterval(() => {
+      if (progress < 85) {
+        progress += Math.random() * 15; // Random increments
+        if (progress > 85) progress = 85; // Cap at 85% until complete
+      }
+    }, 200);
     
     try {
       // Wait for PouchDB to be ready
@@ -71,7 +80,14 @@
         error = 'Failed to load document';
       }
     } finally {
+      clearInterval(progressInterval);
+      progress = 100; // Complete the progress bar
       loading = false;
+      
+      // Reset progress bar after a short delay
+      setTimeout(() => {
+        progress = 0;
+      }, 500);
     }
   });
 </script>
@@ -87,7 +103,7 @@
   
   <!-- Editor components -->
   <Userinput />
-  <Statusbar centerText={loading ? 'Loading document...' : (document?.title || '')} rightText="" />
+  <Statusbar centerText={loading ? 'Loading document...' : (document?.title || '')} rightText="" progress={loading ? progress : undefined} />
   {#if document}
     <Display />
     <ScrollBar 
