@@ -1,0 +1,47 @@
+.backgroundShapes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.shape {
+  position: absolute;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+}
+
+.shape1 {
+  width: 300px;
+  height: 300px;
+  top: -150px;
+  left: -150px;
+  background: rgba(255, 182, 193, 0.15); /* Light pink */
+}
+
+.shape2 {
+  width: 200px;
+  height: 200px;
+  bottom: -100px;
+  right: -100px;
+  background: rgba(173, 216, 230, 0.15); /* Light blue */
+}
+
+.shape3 {
+  width: 150px;
+  height: 150px;
+  top: 50%;
+  left: -75px;
+  background: rgba(221, 160, 221, 0.15); /* Light plum */
+}
+
+.shape4 {
+  width: 100px;
+  height: 100px;
+  top: 20%;
+  right: 10%;
+  background: rgba(152, 251, 152, 0.15); /* Light green */
+}
